@@ -1,0 +1,373 @@
+
+---
+title: "Growers report"
+author: "CSIRO team"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+    html_document: default
+---
+
+```{r setup and load library, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+library(dplyr)
+library(tidyverse)
+library(readr)
+library(lubridate)
+library(DT)
+library(sp)
+
+
+library(rgdal)
+library(sf)
+
+#install.packages("plotKML")
+#library(plotKML)
+library(knitr)
+library(png)
+
+library(readxl)
+
+
+library(ggmap)
+library(maps)
+library(mapdata)
+
+library(raster)
+library(formattable)
+library(magick)
+library(readxl)
+
+```
+
+## Growers details
+```{r define_sites, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+#######################################################################################################################################################
+# paddock_done2020_t<- read_excel("C:/Users/ouz001/CSIRO/Ratcliff, Christina (A&F, Waite Campus) - Soil_Testing_Project/paddock_done2020.xlsx", 
+#                                 sheet = "T-test_done")
+
+paddock_done2020_t<- read_excel("//Fssa2-adl/clw-share1/Microlab/value_soil_testing_prj/Yield_data/2020/processing/paddock_done2020.xlsx", 
+                              sheet = "T-test_done")
+
+
+paddock_done2020_t <- paddock_done2020_t %>% 
+  dplyr::mutate(paddock5_digits = substr(`Paddock code`, start = 1, stop = 5))
+
+#select orgaiastion
+
+selection_organisation <- "SA Ind"
+
+selection_Contact <- "Jeff Braun"
+
+
+
+paddock_done2020 <- 
+  #filter(paddock_done2020_t, Organisation %in% selection_Contact) %>% 
+  filter(paddock_done2020_t, Contact %in% selection_Contact) %>% 
+  distinct(paddock5_digits, .keep_all= TRUE) %>% 
+  dplyr::select(paddock = paddock5_digits,
+                Organisation,
+                Contact,
+                Farmer,
+                `Paddock tested`,
+                'issues/ comments',
+                'Rates excluded (recom rate analysis)' = Rates_excluded_rec_rate,
+                'Rates used (low med high analysis)' = rate_used_low_high_med)   
+
+paddock_done2020_display <- 
+  filter(paddock_done2020_t, Contact %in% selection_Contact) %>% 
+  distinct(paddock5_digits, .keep_all= TRUE) %>% 
+  dplyr::select(Paddock = paddock5_digits,
+                Organisation,
+                Contact,
+                Farmer,
+                `Paddock tested`,
+                'issues/ comments')  
+
+
+paddock_details <- paddock_done2020_t %>% 
+  dplyr::select(`Paddock code`,
+                Farmer,
+                `Paddock tested`,
+                Zone) %>% 
+  dplyr::mutate(paddock5_digits = substr(`Paddock code`, start = 1, stop = 5)) %>% 
+  dplyr::mutate(paddock5_digits = as.double(paddock5_digits))
+
+
+
+paddock_done2020_display %>% 
+  formattable(align = "l", - 1  )
+
+
+
+
+
+```
+
+Extra Notes:
+
+- no Alt GSP strip for these sites
+
+
+
+
+
+
+
+```{r define_sites2, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+## set up some folder to look for data:
+
+png_folder <- "W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/png"
+
+Growers_folder <- paste0("W:/value_soil_testing_prj/Yield_data/2020/", 
+                         unique(paddock_done2020$Organisation), "/",unique(paddock_done2020$Contact), "/")
+
+
+Growers_folder <- gsub(" ", "_", Growers_folder)
+Growers_folder <- gsub("-", "_", Growers_folder)
+
+
+
+#each folder for the sites (4 listed here)
+site1 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
+                (unique(paddock_done2020$`Paddock tested`)[1]),
+                #(unique(paddock_done2020$Farmer)[1]),
+                "/output/")
+
+ site2 <- paste0((unique(paddock_done2020$Farmer)[2]),"/",
+                 (unique(paddock_done2020$`Paddock tested`)[2]),
+                 #(unique(paddock_done2020$Farmer)[2]),
+                 "/output/")
+ 
+ site3 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+                 (unique(paddock_done2020$`Paddock tested`)[3]),
+                 #(unique(paddock_done2020$Farmer)[3]),
+                 "/output/")
+
+# site4 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+#                 (unique(paddock_done2020$`Paddock tested`)[4]),
+#                 "/output/")
+# 
+# 
+# site5 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+#                 (unique(paddock_done2020$`Paddock tested`)[5]),
+#                 "/output/")
+
+
+site1 <- gsub(" ", "_", site1)
+site1 <- gsub("-", "_", site1)
+site2 <- gsub(" ", "_", site2)
+site2 <- gsub("-", "_", site2)
+site3 <- gsub(" ", "_", site3)
+site3 <- gsub("-", "_", site3)
+# site4 <- gsub(" ", "_", site4)
+# site4 <- gsub("-", "_", site4)
+# site5 <- gsub("-", "_", site5)
+# site5 <- gsub(" ", "_", site5)
+
+
+# Growers_folder 
+#  site1
+#  site2
+site3 <- "Bussenschutt/Freds_18_19/output/"
+# site4
+# site5
+
+#Lets look for a yld trace maps
+
+#list files that conatin the word "trace" followed by anything and ending with the word ".png":
+yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "trace(.*)$", ignore.case = TRUE)
+# yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*).png$", ignore.case = TRUE)
+# yld_trace_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "trace(.*).png$", ignore.case = TRUE)
+
+#list files that conatin the word "final" followed by anything and ending with the word ".png": 
+
+harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "Final(.*)$", ignore.case = TRUE)
+# harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*).png$", ignore.case = TRUE)
+# harvest_map_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "Final(.*).png$", ignore.case = TRUE)
+
+### paddock id details
+site_name_1 <- paste0("^",paddock_done2020$Farmer[1])
+site_name_2 <- paste0("^",paddock_done2020$Farmer[2])
+site_name_3 <- paste0("^",paddock_done2020$Farmer[3])
+# site_name_4 <- paste0("^",paddock_done2020$paddock[4])
+# site_name_5 <- paste0("^",paddock_done2020$paddock[5])
+
+
+
+
+Paddock_selected_site1 <- paddock_done2020$paddock[1]
+Paddock_selected_site2 <- paddock_done2020$paddock[2]
+Paddock_selected_site3 <- paddock_done2020$paddock[3]
+# Paddock_selected_site4 <- paddock_done2020$paddock[4]
+# Paddock_selected_site5 <- paddock_done2020$paddock[5]
+
+
+```
+
+```{r read spatial data, message=FALSE, warning=FALSE, include=FALSE}
+spatial_data_no_yld <- st_read("W:/value_soil_testing_prj/Yield_data/2020/All_Strips_2020_wgs84.shp")
+spatial_data_no_yld_df <- data.frame(spatial_data_no_yld)
+spatial_data_no_yld_df <- spatial_data_no_yld_df %>% dplyr::select(-geometry)
+
+```
+
+# Site 1
+
+### Harvest map
+
+```{r display site 1, echo=FALSE, message=FALSE, warning=FALSE}
+
+include_graphics(paste0(Growers_folder,site1,  harvest_map_site1))
+```
+
+
+### Yield trace
+
+```{r display site 1 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+include_graphics(paste0(Growers_folder,site1,  yld_trace_site1))
+```
+
+### Results
+
+
+```{r display results site 1, echo=FALSE, message=FALSE, warning=FALSE}
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site1)) %>% 
+  image_rotate(90)
+
+```
+
+
+
+
+
+
+
+# Site 2
+
+### Harvest map
+
+```{r display site 2, echo=FALSE, message=FALSE, warning=FALSE}
+
+include_graphics(paste0(Growers_folder,site2,  harvest_map_site2))
+```
+
+### Yield trace
+
+```{r display site 2 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site2,  yld_trace_site2))
+```
+
+### Results
+
+```{r display results site 2, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site2)) %>% 
+  image_rotate(90)
+
+```
+
+# Site 3
+
+### Harvest map
+
+
+```{r display site 3, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
+```
+
+### Yield trace
+
+```{r display site 3 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
+```
+
+### Results
+
+```{r display results site 3, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>% 
+  image_rotate(90)
+
+```
+
+
+
+
+```{r display site 4, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+# Site 4
+
+### Harvest map
+
+include_graphics(paste0(Growers_folder,site4,  harvest_map_site4))
+```
+
+
+
+```{r display site 4 yld trace, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+### Yield trace
+
+include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
+```
+
+
+
+```{r display results site 4, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+### Results
+
+image_read(dir(png_folder, full.names=T, pattern=site_name_4)) %>% 
+  image_rotate(90)
+
+```
+
+
+
+
+```{r display site 5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+# Site 5
+
+### Harvest map
+
+include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
+```
+
+
+
+```{r display site 5 yld trace, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+### Yield trace
+
+include_graphics(paste0(Growers_folder,site5,  yld_trace_site5))
+```
+
+
+
+```{r display results site 5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+### Results
+
+image_read(dir(png_folder, full.names=T, pattern=site_name_5)) %>% 
+  image_rotate(90)
+
+```
+
