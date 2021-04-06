@@ -47,11 +47,11 @@ library(readxl)
 
 
 #######################################################################################################################################################
-# paddock_done2020_t<- read_excel("C:/Users/ouz001/CSIRO/Ratcliff, Christina (A&F, Waite Campus) - Soil_Testing_Project/paddock_done2020.xlsx", 
-#                                 sheet = "T-test_done")
+ paddock_done2020_t<- read_excel("C:/Users/ouz001/CSIRO/Ratcliff, Christina (A&F, Waite Campus) - Soil_Testing_Project/paddock_done2020.xlsx", 
+                                 sheet = "T-test_done")
 
-paddock_done2020_t<- read_excel("//Fssa2-adl/clw-share1/Microlab/value_soil_testing_prj/Yield_data/2020/processing/paddock_done2020.xlsx", 
-                              sheet = "T-test_done")
+# paddock_done2020_t<- read_excel("//Fssa2-adl/clw-share1/Microlab/value_soil_testing_prj/Yield_data/2020/processing/paddock_done2020.xlsx", 
+#                               sheet = "T-test_done")
 
 
 paddock_done2020_t <- paddock_done2020_t %>% 
@@ -110,7 +110,7 @@ paddock_done2020_display %>%
 
 Extra Notes:
 
-- 
+- No recommended rates email to Sean 1/4/2021
 
 
 
@@ -460,15 +460,15 @@ This may occur because the strips have underlying soil, plant growth conditions.
 GSP_AltGSP_t_test <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/GSP_AltGSP_t_test_merged_3c.csv")
 
 GSP_AltGSP_t_test$paddock_ID <- as.character(GSP_AltGSP_t_test$paddock_ID)
- 
+
 
 GSPvsAltGSP_plot <- GSP_AltGSP_t_test %>%
   dplyr::filter(
-     paddock_ID == Paddock_selected_site1 |
+    paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
       paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 |
-      #paddock_ID == Paddock_selected_site5
+    #paddock_ID == Paddock_selected_site4 |
+    #paddock_ID == Paddock_selected_site5
   ) %>%
   ggplot( mapping = aes(x=Significant_practical ))+
   geom_bar() +
@@ -517,7 +517,7 @@ GSP_AltGSP_t_test_display <- GSP_AltGSP_t_test_display %>%
                 `Paddock tested`,
                 #`yield response` = yld_response, 
                 `Mean yield difference` = rounded, 
-                `Significant practical` = Significant_practical
+                `Significant` = Significant_practical
                 ) 
 GSP_AltGSP_t_test_display <- GSP_AltGSP_t_test_display %>% 
   arrange(`Zone ID`)
@@ -670,7 +670,7 @@ high_v_low_comp_results <- high_low_comp_t %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 high_v_low_comp_results <- high_v_low_comp_results %>% 
   arrange(`Zone ID`)
 
@@ -692,7 +692,7 @@ high_v_med_comp_results <- high_low_comp_t %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 high_v_med_comp_results <- high_v_med_comp_results %>% 
   arrange(`Zone ID`)
 
@@ -711,7 +711,7 @@ med_v_low_comp_results <- high_low_comp_t %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 med_v_low_comp_results <- med_v_low_comp_results %>% 
   arrange(`Zone ID`)
 
@@ -827,7 +827,7 @@ GR_comparison_higher_results <- GR_comparison %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 
 
 GR_comparison_higher_results <- GR_comparison_higher_results %>% 
@@ -874,7 +874,7 @@ GR_comparison_lower_results <- GR_comparison %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 
 
 GR_comparison_lower_results <- GR_comparison_lower_results %>% 
@@ -959,7 +959,7 @@ Please make a note.
 
 
 
-```{r rec rate comp high low plot, echo=FALSE, message=FALSE, warning=FALSE}
+```{r rec rate comp high low plot, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 Rec_rate_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e.csv")
 
@@ -1015,7 +1015,7 @@ Rec_rate_comparison_plot
 
 
 
-```{r rec rate comp high table rates, echo=FALSE, message=FALSE, warning=FALSE}
+```{r rec rate comp high table rates, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 Rec_rate_comparison <- left_join(Rec_rate_comparison, paddock_details, by= c("Zone_ID" = "Paddock code"))
 
@@ -1038,7 +1038,7 @@ Rec_rate_comparison_table_higher_results <- Rec_rate_comparison %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 
 
 Rec_rate_comparison_table_higher_results <- Rec_rate_comparison_table_higher_results %>% 
@@ -1054,7 +1054,7 @@ Rec_rate_comparison_table_higher_rates %>%
 
 #### The results for the analysis
 
-```{r rec rate comp high table results, echo=FALSE, message=FALSE, warning=FALSE}
+```{r rec rate comp high table results, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 
 
@@ -1068,7 +1068,7 @@ Rec_rate_comparison_table_higher_results %>%
 
 
 
-```{r rec rate comp low table, echo=FALSE, message=FALSE, warning=FALSE}
+```{r rec rate comp low table, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 
 
@@ -1091,7 +1091,7 @@ Rec_rate_comparison_table_lower_results <- Rec_rate_comparison %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) %>% 
+                `Significant` = Significant_practical) %>% 
   arrange(`Zone ID`)
 
 
@@ -1105,7 +1105,7 @@ Rec_rate_comparison_table_lower_rates %>%
 
 #### The results for the analysis
 
-```{r rec rate comp low table results, echo=FALSE, message=FALSE, warning=FALSE}
+```{r rec rate comp low table results, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 Rec_rate_comparison_table_lower_results %>% 
    formattable(align = "l", - 1  )
 
