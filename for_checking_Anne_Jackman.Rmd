@@ -106,10 +106,10 @@ paddock_done2020_display %>%
 
 Extra Notes:
 
-- Duplication of paddock code means that looks up for soil testing recommned rats could be wrong.
-- Cormer could have additional N strips (email to confirm but I dont know location of strips).
-- This has been chnaged in Sean / Harms DB, I am now using the 23rd March DB.
-- other sites include but I don't have inforamtion for these paddocks.
+- Duplication of paddock code means that looks up for soil testing recommend rats could be wrong.
+- Cormer could have additional N strips (email to confirm but I don't know location of strips).
+- This has been changed in Sean / Harms DB, I am now using the 23rd March DB.
+- other sites include but I don't have information for these paddocks.
 
 333211	Vic	Wimmera	Independent	Anne	Taylor  Jims BlacK
 
@@ -257,7 +257,7 @@ include_graphics(paste0(Growers_folder,site1,  yld_trace_site1))
 
 ```{r display results site 1, echo=FALSE, message=FALSE, warning=FALSE}
 
-image_read(dir(png_folder, full.names=T, pattern=site_name_1)) %>% 
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site1)) %>% 
   image_rotate(90)
 
 ```
@@ -492,7 +492,7 @@ GSPvsAltGSP_plot <- GSP_AltGSP_t_test %>%
        y = "Count of zones with a significant difference",
        x = "result of t - test (GSP vs. Alt GSP)")
 
-GSPvsAltGSP_plot
+#GSPvsAltGSP_plot
 
 
 
@@ -530,7 +530,7 @@ GSP_AltGSP_t_test_display <- GSP_AltGSP_t_test_display %>%
                 `Paddock tested`,
                 #`yield response` = yld_response, 
                 `Mean yield difference` = rounded, 
-                `Significant practical` = Significant_practical
+                `Significant` = Significant_practical
                 ) 
 GSP_AltGSP_t_test_display <- GSP_AltGSP_t_test_display %>% 
   arrange(`Zone ID`)
@@ -683,7 +683,7 @@ high_v_low_comp_results <- high_low_comp_t %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 high_v_low_comp_results <- high_v_low_comp_results %>% 
   arrange(`Zone ID`)
 
@@ -705,7 +705,7 @@ high_v_med_comp_results <- high_low_comp_t %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 high_v_med_comp_results <- high_v_med_comp_results %>% 
   arrange(`Zone ID`)
 
@@ -724,7 +724,7 @@ med_v_low_comp_results <- high_low_comp_t %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 med_v_low_comp_results <- med_v_low_comp_results %>% 
   arrange(`Zone ID`)
 
@@ -840,7 +840,7 @@ GR_comparison_higher_results <- GR_comparison %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 
 
 GR_comparison_higher_results <- GR_comparison_higher_results %>% 
@@ -887,7 +887,7 @@ GR_comparison_lower_results <- GR_comparison %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 
 
 GR_comparison_lower_results <- GR_comparison_lower_results %>% 
@@ -1051,7 +1051,7 @@ Rec_rate_comparison_table_higher_results <- Rec_rate_comparison %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) 
+                `Significant` = Significant_practical) 
 
 
 Rec_rate_comparison_table_higher_results <- Rec_rate_comparison_table_higher_results %>% 
@@ -1104,7 +1104,7 @@ Rec_rate_comparison_table_lower_results <- Rec_rate_comparison %>%
                 Farmer,
                 `Paddock tested`,
                 "yield response" = yld_response,
-                `Significant practical` = Significant_practical) %>% 
+                `Significant` = Significant_practical) %>% 
   arrange(`Zone ID`)
 
 
