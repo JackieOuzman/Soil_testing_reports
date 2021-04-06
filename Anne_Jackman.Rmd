@@ -108,7 +108,7 @@ Extra Notes:
 
 
 - Cormer could have additional N strips.
-- other sites include but I don't have information for these paddocks.
+- other sites included but I don't have information for these paddocks.
 
 333211	Vic	Wimmera	Independent	Anne	Taylor  Jims BlacK
 
@@ -195,7 +195,7 @@ site1 <- gsub("-", "_", site1)
 #Lets look for a yld trace maps
 
 #list files that conatin the word "trace" followed by anything and ending with the word ".png":
-yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "trace(.*).png$", ignore.case = TRUE)
+yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "trace(.*)$", ignore.case = TRUE)
 # yld_trace_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "trace(.*).png$", ignore.case = TRUE)
 # yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "trace(.*).png$", ignore.case = TRUE)
 # yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*).png$", ignore.case = TRUE)
@@ -203,7 +203,7 @@ yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "tr
 
 #list files that conatin the word "final" followed by anything and ending with the word ".png": 
 
-harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "Final(.*).png$", ignore.case = TRUE)
+harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "Final(.*)$", ignore.case = TRUE)
 # harvest_map_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "Final(.*).png$", ignore.case = TRUE)
 # harvest_map_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "Final(.*).png$", ignore.case = TRUE)
 # harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*).png$", ignore.case = TRUE)
