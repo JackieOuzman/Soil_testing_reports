@@ -144,10 +144,10 @@ site1 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
                  #(unique(paddock_done2020$Farmer)[2]),
                  "/output/")
  
-# site3 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
-#                 #(unique(paddock_done2020$`Paddock tested`)[3]),
-#                 (unique(paddock_done2020$Farmer)[3]),
-#                 "/output/")
+ site3 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+                 (unique(paddock_done2020$`Paddock tested`)[3]),
+                 #(unique(paddock_done2020$Farmer)[3]),
+                 "/output/")
 
 # site4 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
 #                 (unique(paddock_done2020$`Paddock tested`)[4]),
@@ -163,8 +163,8 @@ site1 <- gsub(" ", "_", site1)
 site1 <- gsub("-", "_", site1)
  site2 <- gsub(" ", "_", site2)
  site2 <- gsub("-", "_", site2)
-# site3 <- gsub(" ", "_", site3)
-# site3 <- gsub("-", "_", site3)
+ site3 <- gsub(" ", "_", site3)
+ site3 <- gsub("-", "_", site3)
 # site4 <- gsub(" ", "_", site4)
 # site4 <- gsub("-", "_", site4)
 # site5 <- gsub("-", "_", site5)
@@ -198,7 +198,7 @@ harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "
 ### paddock id details
 site_name_1 <- paste0("^",paddock_done2020$Farmer[1])
 site_name_2 <- paste0("^",paddock_done2020$Farmer[2])
-# site_name_3 <- paste0("^",paddock_done2020$Farmer[3])
+site_name_3 <- paste0("^",paddock_done2020$Farmer[3])
 # site_name_4 <- paste0("^",paddock_done2020$paddock[4])
 # site_name_5 <- paste0("^",paddock_done2020$paddock[5])
 
@@ -207,7 +207,7 @@ site_name_2 <- paste0("^",paddock_done2020$Farmer[2])
 
 Paddock_selected_site1 <- paddock_done2020$paddock[1]
 Paddock_selected_site2 <- paddock_done2020$paddock[2]
-# Paddock_selected_site3 <- paddock_done2020$paddock[3]
+Paddock_selected_site3 <- paddock_done2020$paddock[3]
 # Paddock_selected_site4 <- paddock_done2020$paddock[4]
 # Paddock_selected_site5 <- paddock_done2020$paddock[5]
 
@@ -381,8 +381,8 @@ fert_applied <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/p
 check_fert_applied <- fert_applied %>%
   dplyr::filter(
     Paddock_ID == Paddock_selected_site1 |
-      Paddock_ID == Paddock_selected_site2 
-      #Paddock_ID == Paddock_selected_site3 |
+      Paddock_ID == Paddock_selected_site2 |
+      Paddock_ID == Paddock_selected_site3 
       #Paddock_ID == Paddock_selected_site4 |
       #Paddock_ID == Paddock_selected_site5
   ) %>%
