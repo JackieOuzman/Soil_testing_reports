@@ -107,10 +107,16 @@ These sites are very complicated to analyse, many have VR and strip and zone com
 
 The rates of fertiliser applied is often a combination of starter and in season, which is part of the trial design, therefore it is included in the calculations of N / P content (unlike many other sites).
 
-Some sites will have limited analysis these include (I will update this soon)
--
+Some sites will have limited analysis these include.
+
+- MSF/Frontier Farming Pole Gums; has very complicated set up. I am not sure my analsysis is capturing it.
+- I have emialed Therese for confirmation and then I will try again with N content as label.
 
 
+NOTE FOR JACKIE
+Look at line 66 in Prices (rec rate script) and see if I am selecting all zones!!
+Matt 8 recom rates not working I have updated fert contnet.
+Pole Gum having trouble with rec rates??
 
 
 
@@ -152,11 +158,11 @@ site1 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
  site4 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
                  (unique(paddock_done2020$`Paddock tested`)[4]),
                  "/output/")
-# 
-# 
-# site5 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
-#                 (unique(paddock_done2020$`Paddock tested`)[5]),
-#                 "/output/")
+ 
+ 
+ site5 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+                 (unique(paddock_done2020$`Paddock tested`)[5]),
+                 "/output/")
 
 
 site1 <- gsub(" ", "_", site1)
@@ -167,8 +173,8 @@ site3 <- gsub(" ", "_", site3)
 site3 <- gsub("-", "_", site3)
 site4 <- gsub(" ", "_", site4)
 site4 <- gsub("-", "_", site4)
-# site5 <- gsub("-", "_", site5)
-# site5 <- gsub(" ", "_", site5)
+site5 <- gsub("-", "_", site5)
+site5 <- gsub(" ", "_", site5)
 
 
 #Growers_folder 
@@ -185,7 +191,7 @@ yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "tr
 yld_trace_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "trace(.*)$", ignore.case = TRUE)
 yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "trace(.*)$", ignore.case = TRUE)
 yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*)$", ignore.case = TRUE)
-# yld_trace_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "trace(.*).png$", ignore.case = TRUE)
+yld_trace_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "trace(.*)$", ignore.case = TRUE)
 
 #list files that conatin the word "final" followed by anything and ending with the word ".png": 
 
@@ -193,14 +199,14 @@ harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "
 harvest_map_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "Final(.*)$", ignore.case = TRUE)
 harvest_map_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "Final(.*)$", ignore.case = TRUE)
 harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*)$", ignore.case = TRUE)
-# harvest_map_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "Final(.*).png$", ignore.case = TRUE)
+harvest_map_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "Final(.*)$", ignore.case = TRUE)
 
 ### paddock id details
 site_name_1 <- paste0("^",paddock_done2020$Farmer[1])
 site_name_2 <- paste0("^",paddock_done2020$Farmer[2])
 site_name_3 <- paste0("^",paddock_done2020$Farmer[3])
 site_name_4 <- paste0("^",paddock_done2020$paddock[4])
-# site_name_5 <- paste0("^",paddock_done2020$paddock[5])
+site_name_5 <- paste0("^",paddock_done2020$paddock[5])
 
 
 
@@ -209,7 +215,7 @@ Paddock_selected_site1 <- paddock_done2020$paddock[1]
 Paddock_selected_site2 <- paddock_done2020$paddock[2]
 Paddock_selected_site3 <- paddock_done2020$paddock[3]
 Paddock_selected_site4 <- paddock_done2020$paddock[4]
-# Paddock_selected_site5 <- paddock_done2020$paddock[5]
+Paddock_selected_site5 <- paddock_done2020$paddock[5]
 
 
 ```
@@ -339,34 +345,34 @@ image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
 
 ```
 
-
-
-
-```{r display site 5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-
 # Site 5
 
 ### Harvest map
 
+
+```{r display site 5, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
 include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
 ```
-
-
-
-```{r display site 5 yld trace, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-
 ### Yield trace
+
+
+```{r display site 5 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+
+
 
 include_graphics(paste0(Growers_folder,site5,  yld_trace_site5))
 ```
 
-
-
-```{r display results site 5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-
 ### Results
 
-image_read(dir(png_folder, full.names=T, pattern=site_name_5)) %>% 
+```{r display results site 5, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site5)) %>% 
   image_rotate(90)
 
 ```
@@ -384,8 +390,8 @@ check_fert_applied <- fert_applied %>%
     Paddock_ID == Paddock_selected_site1 |
       Paddock_ID == Paddock_selected_site2 |
       Paddock_ID == Paddock_selected_site3 |
-      Paddock_ID == Paddock_selected_site4 
-      #Paddock_ID == Paddock_selected_site5
+      Paddock_ID == Paddock_selected_site4 |
+      Paddock_ID == Paddock_selected_site5
   ) %>%
   dplyr::select(Paddock_ID,
                 Rate,
@@ -435,8 +441,8 @@ comments_frm_spatial_data <- spatial_data_no_yld_df %>%
     Paddock_ID == Paddock_selected_site1 |
       Paddock_ID == Paddock_selected_site2 |
       Paddock_ID == Paddock_selected_site3 |
-      Paddock_ID == Paddock_selected_site4 
-      #Paddock_ID == Paddock_selected_site5
+      Paddock_ID == Paddock_selected_site4 |
+      Paddock_ID == Paddock_selected_site5
   ) %>%
 distinct( paddock,Comments, .keep_all = TRUE) %>% 
   dplyr::select(Paddock_ID ,farmer, paddock, Comments )
