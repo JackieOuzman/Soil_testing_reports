@@ -149,9 +149,9 @@ site1 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
                  #(unique(paddock_done2020$Farmer)[3]),
                  "/output/")
 
-# site4 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
-#                 (unique(paddock_done2020$`Paddock tested`)[4]),
-#                 "/output/")
+ site4 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+                 (unique(paddock_done2020$`Paddock tested`)[4]),
+                 "/output/")
 # 
 # 
 # site5 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
@@ -161,12 +161,12 @@ site1 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
 
 site1 <- gsub(" ", "_", site1)
 site1 <- gsub("-", "_", site1)
- site2 <- gsub(" ", "_", site2)
- site2 <- gsub("-", "_", site2)
- site3 <- gsub(" ", "_", site3)
- site3 <- gsub("-", "_", site3)
-# site4 <- gsub(" ", "_", site4)
-# site4 <- gsub("-", "_", site4)
+site2 <- gsub(" ", "_", site2)
+site2 <- gsub("-", "_", site2)
+site3 <- gsub(" ", "_", site3)
+site3 <- gsub("-", "_", site3)
+site4 <- gsub(" ", "_", site4)
+site4 <- gsub("-", "_", site4)
 # site5 <- gsub("-", "_", site5)
 # site5 <- gsub(" ", "_", site5)
 
@@ -184,7 +184,7 @@ site1 <- gsub("-", "_", site1)
 yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "trace(.*)$", ignore.case = TRUE)
 yld_trace_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "trace(.*)$", ignore.case = TRUE)
 yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "trace(.*)$", ignore.case = TRUE)
-# yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*).png$", ignore.case = TRUE)
+yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*)$", ignore.case = TRUE)
 # yld_trace_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "trace(.*).png$", ignore.case = TRUE)
 
 #list files that conatin the word "final" followed by anything and ending with the word ".png": 
@@ -192,14 +192,14 @@ yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "tr
 harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "Final(.*)$", ignore.case = TRUE)
 harvest_map_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "Final(.*)$", ignore.case = TRUE)
 harvest_map_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "Final(.*)$", ignore.case = TRUE)
-# harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*).png$", ignore.case = TRUE)
+harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*)$", ignore.case = TRUE)
 # harvest_map_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "Final(.*).png$", ignore.case = TRUE)
 
 ### paddock id details
 site_name_1 <- paste0("^",paddock_done2020$Farmer[1])
 site_name_2 <- paste0("^",paddock_done2020$Farmer[2])
 site_name_3 <- paste0("^",paddock_done2020$Farmer[3])
-# site_name_4 <- paste0("^",paddock_done2020$paddock[4])
+site_name_4 <- paste0("^",paddock_done2020$paddock[4])
 # site_name_5 <- paste0("^",paddock_done2020$paddock[5])
 
 
@@ -208,7 +208,7 @@ site_name_3 <- paste0("^",paddock_done2020$Farmer[3])
 Paddock_selected_site1 <- paddock_done2020$paddock[1]
 Paddock_selected_site2 <- paddock_done2020$paddock[2]
 Paddock_selected_site3 <- paddock_done2020$paddock[3]
-# Paddock_selected_site4 <- paddock_done2020$paddock[4]
+Paddock_selected_site4 <- paddock_done2020$paddock[4]
 # Paddock_selected_site5 <- paddock_done2020$paddock[5]
 
 
@@ -309,32 +309,32 @@ image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
   image_rotate(90)
 
 ```
-
-
-
-
-```{r display site 4, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Site 4
 
 ### Harvest map
 
+
+
+```{r display site 4, echo=FALSE, message=FALSE, warning=FALSE}
+
+
 include_graphics(paste0(Growers_folder,site4,  harvest_map_site4))
 ```
 
-
-
-```{r display site 4 yld trace, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ### Yield trace
+
+
+```{r display site 4 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
 
 include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 ```
 
-
-
-```{r display results site 4, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ### Results
 
-image_read(dir(png_folder, full.names=T, pattern=site_name_4)) %>% 
+
+```{r display results site 4, echo=FALSE, message=FALSE, warning=FALSE}
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>% 
   image_rotate(90)
 
 ```
@@ -383,8 +383,8 @@ check_fert_applied <- fert_applied %>%
   dplyr::filter(
     Paddock_ID == Paddock_selected_site1 |
       Paddock_ID == Paddock_selected_site2 |
-      Paddock_ID == Paddock_selected_site3 
-      #Paddock_ID == Paddock_selected_site4 |
+      Paddock_ID == Paddock_selected_site3 |
+      Paddock_ID == Paddock_selected_site4 
       #Paddock_ID == Paddock_selected_site5
   ) %>%
   dplyr::select(Paddock_ID,
@@ -434,8 +434,8 @@ comments_frm_spatial_data <- spatial_data_no_yld_df %>%
   dplyr::filter(
     Paddock_ID == Paddock_selected_site1 |
       Paddock_ID == Paddock_selected_site2 |
-      Paddock_ID == Paddock_selected_site3 
-      #Paddock_ID == Paddock_selected_site4 |
+      Paddock_ID == Paddock_selected_site3 |
+      Paddock_ID == Paddock_selected_site4 
       #Paddock_ID == Paddock_selected_site5
   ) %>%
 distinct( paddock,Comments, .keep_all = TRUE) %>% 
@@ -465,8 +465,8 @@ GSPvsAltGSP_plot <- GSP_AltGSP_t_test %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      # paddock_ID == Paddock_selected_site4 |
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5
   ) %>%
   ggplot( mapping = aes(x=Significant_practical ))+
@@ -498,8 +498,8 @@ GSP_AltGSP_t_test_display <- GSP_AltGSP_t_test %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      # paddock_ID == Paddock_selected_site4 |
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5
   ) 
 
@@ -563,8 +563,8 @@ high_low_comp <- high_low_comp %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      # paddock_ID == Paddock_selected_site4 |
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5
   )
 high_low_comp <- left_join(high_low_comp,
@@ -654,8 +654,8 @@ high_low_comp_t <- high_low_comp_t %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      # paddock_ID == Paddock_selected_site4 |
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5
   )
 high_low_comp_t <- left_join(high_low_comp_t,
@@ -762,8 +762,8 @@ GR_comparison <- GR_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      # paddock_ID == Paddock_selected_site4 |
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5
   )
 
@@ -968,8 +968,8 @@ Rec_rate_comparison <- Rec_rate_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5
   )
 
@@ -1019,8 +1019,8 @@ Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5
   )
 
@@ -1117,8 +1117,8 @@ paddock_details_join <- paddock_details_join %>%
   dplyr::filter(
       paddock5_digits == Paddock_selected_site1 |
       paddock5_digits == Paddock_selected_site2 |
-      paddock5_digits == Paddock_selected_site3 
-      #paddock5_digits == Paddock_selected_site4 
+      paddock5_digits == Paddock_selected_site3 |
+      paddock5_digits == Paddock_selected_site4 
     # paddock_ID == Paddock_selected_site5
   )
 ## just subset the clm we want
@@ -1133,8 +1133,8 @@ Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
     # paddock_ID == Paddock_selected_site5
   )
 
@@ -1177,8 +1177,8 @@ Rec_rate_comparison <- Rec_rate_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
     # paddock_ID == Paddock_selected_site5
   )
 
@@ -1257,8 +1257,8 @@ Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
     # paddock_ID == Paddock_selected_site5
   )
 
@@ -1300,8 +1300,8 @@ Rec_rate_comparison <- Rec_rate_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site3 |
+      paddock_ID == Paddock_selected_site4 
     # paddock_ID == Paddock_selected_site5
   )
 
