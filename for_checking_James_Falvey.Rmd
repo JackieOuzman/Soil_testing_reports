@@ -105,21 +105,13 @@ paddock_done2020_display %>%
 
 Extra Notes:
 
-Something is wrong with onedrive and the done paddocks file is not updating.
-Missing Pratty NW although its anlaysed.
-
-Still to analyse:
-		
-James Falvey	Lehamann	Spittles Corner
-James Falvey	Lehamann	Crosbies Corner
-James Falvey	Lehamann	Lawlers North
 
 Can't analyse as is, waiting for more infomation:
 
-James Falvey	McClelland	Far west
-James Falvey	McClelland	Jill Jill west
-James Falvey	McClelland	Watsons
-James Falvey	McClelland	Clovers north
+- James Falvey	McClelland	Far west
+- James Falvey	McClelland	Jill Jill west
+- James Falvey	McClelland	Watsons
+- James Falvey	McClelland	Clovers north
 
 
 
@@ -529,14 +521,14 @@ image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site7)) %>%
 
 ### check the rate provided is equivalent to the calculated N/P content.
 
-JAX Run the shapefile script again!
+
 
 ```{r checks site , echo=FALSE, message=FALSE, warning=FALSE}
 
 fert_applied <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/processing_files/step2_fert_app_select_clm.csv")
 
-#! problem with this paddock
-Paddock_selected_site6 <- 524102
+
+
 
 check_fert_applied <- fert_applied %>%
   dplyr::filter(
@@ -1646,7 +1638,8 @@ recom_rateDB <- left_join(recom_rateDB,
 
 recom_rateDB <- recom_rateDB %>% 
   dplyr::select( `Zone ID` = Zone_ID,
-                 Farmer,
+                 #Farmer,
+                 `Paddock tested`,
                  Zone,
                  `p rec` = p_rec,
                  `Comment Soil P` = SM_comment_Soil_P,
