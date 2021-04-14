@@ -107,16 +107,15 @@ These sites are very complicated to analyse, many have VR and strip and zone com
 
 The rates of fertiliser applied is often a combination of starter and in season, which is part of the trial design, therefore it is included in the calculations of N / P content (unlike many other sites).
 
-Some sites will have limited analysis these include.
+Some sites will have limited analysis these include:
+- Hards	Francis
+- Pole	Symes
 
 - MSF/Frontier Farming Pole Gums; has very complicated set up. I am not sure my analsysis is capturing it.
-- I have emialed Therese for confirmation and then I will try again with N content as label.
 
 
-NOTE FOR JACKIE
-Not done yet:
-Hards	Francis
-Pole	Symes
+
+
 
 
 
