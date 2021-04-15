@@ -1629,3 +1629,77 @@ Rec_rate_comparison_table_lower_results %>%
 Notes should be made in the below file:
 
 [For Notes ]("C:/Users/ouz001/CSIRO/Ratcliff, Christina (A&F, Waite Campus) - Soil_Testing_Project/paddock_done2020.xlsx")
+
+
+# Couple of checks and comments from Sean and Harms database.
+```{r Sean and Harms DB, echo=FALSE, message=FALSE, warning=FALSE}
+
+recom_rateDB <- read_excel( "W:/value_soil_testing_prj/Yield_data/2020/processing/GRDC 2020 Paddock Database_SA_VIC_April7 2021.xlsx")
+##########################################################################################################################################
+
+
+recom_rateDB <- recom_rateDB %>% 
+  dplyr::select(Zone_ID =    `Paddock code` ,
+                p_rec =           `P rec`,
+                n_rec_yld_low =   `N Rec (< 3 t/ha)` ,       
+                n_rec_yld_med =   `N Rec (3-5 t/ha)` ,             
+                n_rec_yld_high =  `N Rec (> 5 t/ha)`,
+                SM_comment_Soil_N = `SM comment Soil N`,
+                SM_comment_Soil_P = `SM comment Soil P`,
+                SM_comment_Plant_Tissue = `SM comment Plant Tissue`
+  ) 
+
+recom_rateDB <-  dplyr::mutate(recom_rateDB,  maxN = apply(recom_rateDB[3:5], 1, max, na.rm = TRUE))
+
+
+# remove redunant clm and replace inf
+recom_rateDB <- recom_rateDB %>% 
+  mutate(
+    maxN = case_when(
+      maxN >= 0 ~ maxN,
+      TRUE ~ NA_real_
+    )
+  )
+
+
+## add 5 digit paddock code to data farme
+recom_rateDB <- recom_rateDB %>% 
+  dplyr::mutate(paddock5_digits = substr(Zone_ID, start = 1, stop = 5))
+
+#select only the paddocks we are working with
+recom_rateDB <- recom_rateDB %>%
+  dplyr::filter(
+    paddock5_digits == Paddock_selected_site1 |
+    paddock5_digits == Paddock_selected_site2 |
+    paddock5_digits == Paddock_selected_site3 | 
+    paddock5_digits == Paddock_selected_site4 |
+    paddock5_digits == Paddock_selected_site5 |
+    paddock5_digits == Paddock_selected_site6 |
+    paddock5_digits == Paddock_selected_site7 )
+
+
+
+recom_rateDB <- left_join(recom_rateDB,
+                                       paddock_details, by = c("Zone_ID" = "Paddock code"))
+
+recom_rateDB <- recom_rateDB %>% 
+  dplyr::select( `Zone ID` = Zone_ID,
+                 #Farmer,
+                 `Paddock tested`,
+                 Zone,
+                 `p rec` = p_rec,
+                 `Comment Soil P` = SM_comment_Soil_P,
+                 `n rec` = maxN,
+                 `Comment Soil N` = SM_comment_Soil_N,
+                 `Comment Plant Tissue` = SM_comment_Plant_Tissue,
+                 n_rec_yld_low,
+                 n_rec_yld_med,
+                 n_rec_yld_high)
+
+
+
+recom_rateDB %>% 
+  formattable(align = "l", - 1  )
+
+
+```
