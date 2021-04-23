@@ -173,7 +173,7 @@ site3 <- gsub("-", "_", site3)
 
 
 # Growers_folder 
-#  site1
+site1 <- "Clarke/Hayshed_Hill/output/"
 #  site2
 site3 <- "Bussenschutt/Freds_18_19/output/"
 # site4

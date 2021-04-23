@@ -85,8 +85,8 @@ paddock_done2020_display <-
                 Organisation,
                 Contact,
                 Farmer,
-                `Paddock tested`,
-                'issues/ comments')  
+                `Paddock tested`)#,
+                #'issues/ comments')  
 
 
 paddock_details <- paddock_done2020_t %>% 
@@ -108,9 +108,7 @@ paddock_done2020_display %>%
 
 ```
 
-Extra Notes:
 
-- no Alt GSP strip for these sites
 
 
 
@@ -173,7 +171,7 @@ site3 <- gsub("-", "_", site3)
 
 
 # Growers_folder 
-#  site1
+site1 <- "Clarke/Hayshed_Hill/output/"
 #  site2
 site3 <- "Bussenschutt/Freds_18_19/output/"
 # site4
