@@ -1445,8 +1445,8 @@ Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 |
-      paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site3 
+      #paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5 |
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -1495,8 +1495,8 @@ Rec_rate_comparison <- Rec_rate_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
       paddock_ID == Paddock_selected_site2 |
-      paddock_ID == Paddock_selected_site3 |
-      paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site3 
+      #paddock_ID == Paddock_selected_site4 
       # paddock_ID == Paddock_selected_site5 |
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -1512,7 +1512,7 @@ Rec_rate_comparison_table_lower_rates <- Rec_rate_comparison %>%
   filter(comparison == "rec_p_v_lower") %>% 
   dplyr::select('Zone ID' = Zone_ID,
                 #Farmer ,
-                `Paddock tested`, 
+                #`Paddock tested`, 
                 `Strip Type`=`Strip_Type`,
                 #comparison,
                 `approx recommed rate` = "rec_rate_p_label",
@@ -1524,7 +1524,7 @@ Rec_rate_comparison_table_lower_results <- Rec_rate_comparison %>%
   dplyr::select('Zone ID' = Zone_ID,
                 `Zone name` ,
                 #Farmer,
-                `Paddock tested`,
+                #`Paddock tested`,
                 `Strip Type`=`Strip_Type`,
                 "yield response" = yld_response,
                 `Significant practical` = Significant_practical) 
@@ -1620,8 +1620,8 @@ recom_rateDB <- recom_rateDB %>%
   dplyr::filter(
     paddock5_digits == Paddock_selected_site1 |
     paddock5_digits == Paddock_selected_site2 |
-    paddock5_digits == Paddock_selected_site3 | 
-    paddock5_digits == Paddock_selected_site4 
+    paddock5_digits == Paddock_selected_site3  
+    #paddock5_digits == Paddock_selected_site4 
     # paddock5_digits == Paddock_selected_site5 |
     # paddock5_digits == Paddock_selected_site6 |
     # paddock5_digits == Paddock_selected_site7 
