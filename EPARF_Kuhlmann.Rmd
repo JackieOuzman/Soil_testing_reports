@@ -47,8 +47,8 @@ library(readxl)
 
 
 #######################################################################################################################################################
- paddock_done2020_t<- read_excel("C:/Users/ouz001/CSIRO/Ratcliff, Christina (A&F, Waite Campus) - Soil_Testing_Project/paddock_done2020.xlsx", 
-                               sheet = "T-test_done")
+paddock_done2020_t<- read_excel("//casal-gw/C$/Users/ouz001/OneDrive - CSIRO/Soil_Testing_Project/paddock_done2020.xlsx", 
+                              sheet = "T-test_done")
 #paddock_done2020_t<- read_excel("//Fssa2-adl/clw-share1/Microlab/value_soil_testing_prj/Yield_data/2020/processing/paddock_done2020.xlsx", 
 #                              sheet = "T-test_done")
 
@@ -185,33 +185,33 @@ site4 <- gsub("-", "_", site4)
 #Lets look for a yld trace maps
 
 #list files that conatin the word "trace" followed by anything and ending with the word ".png":
-yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "trace(.*).png$", ignore.case = TRUE)
-yld_trace_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "trace(.*).png$", ignore.case = TRUE)
-yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "trace(.*).png$", ignore.case = TRUE)
-yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*).png$", ignore.case = TRUE)
+yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "trace(.*)", ignore.case = TRUE)
+yld_trace_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "trace(.*)", ignore.case = TRUE)
+yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "trace(.*)", ignore.case = TRUE)
+yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*)", ignore.case = TRUE)
 # yld_trace_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "trace(.*).png$", ignore.case = TRUE)
 
 #list files that conatin the word "N trace" followed by anything and ending with the word ".png":
 #yld_trace_site1_N <- list.files(path = paste0(Growers_folder, site1),pattern = "N trace(.*).png$", ignore.case = TRUE)
-yld_trace_site2_N <- list.files(path = paste0(Growers_folder, site2),pattern = "N trace(.*).png$", ignore.case = TRUE)
-yld_trace_site3_N <- list.files(path = paste0(Growers_folder, site3),pattern = "N trace(.*).png$", ignore.case = TRUE)
+yld_trace_site2_N <- list.files(path = paste0(Growers_folder, site2),pattern = "N trace(.*)", ignore.case = TRUE)
+yld_trace_site3_N <- list.files(path = paste0(Growers_folder, site3),pattern = "N trace(.*)", ignore.case = TRUE)
 # yld_trace_site4_N <- list.files(path = paste0(Growers_folder, site4),pattern = "N trace(.*).png$", ignore.case = TRUE)
 # yld_trace_site5_N <- list.files(path = paste0(Growers_folder, site5),pattern = "N trace(.*).png$", ignore.case = TRUE)
 
 
 #list files that conatin the word "final" followed by anything and ending with the word ".png": 
 
-harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "Final(.*).png$", ignore.case = TRUE)
-harvest_map_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "Final(.*).png$", ignore.case = TRUE)
-harvest_map_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "Final(.*).png$", ignore.case = TRUE)
-harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*).png$", ignore.case = TRUE)
+harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "Final(.*)", ignore.case = TRUE)
+harvest_map_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "Final(.*)", ignore.case = TRUE)
+harvest_map_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "Final(.*)", ignore.case = TRUE)
+harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*)", ignore.case = TRUE)
 # harvest_map_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "Final(.*).png$", ignore.case = TRUE)
 
 #list files that conatin the word "N final" followed by anything and ending with the word ".png": 
 
 #harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "N Final(.*).png$", ignore.case = TRUE)
-harvest_map_site2_N <- list.files(path = paste0(Growers_folder, site2),pattern = "N Final(.*).png$", ignore.case = TRUE)
-harvest_map_site3_N <- list.files(path = paste0(Growers_folder, site3),pattern = "N Final(.*).png$", ignore.case = TRUE)
+harvest_map_site2_N <- list.files(path = paste0(Growers_folder, site2),pattern = "N Final(.*)", ignore.case = TRUE)
+harvest_map_site3_N <- list.files(path = paste0(Growers_folder, site3),pattern = "N Final(.*)", ignore.case = TRUE)
 # harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "N Final(.*).png$", ignore.case = TRUE)
 # harvest_map_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "N Final(.*).png$", ignore.case = TRUE)
 
