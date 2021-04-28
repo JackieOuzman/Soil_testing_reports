@@ -115,7 +115,9 @@ paddock_done2020_display %>%
 
 Extra Notes:
 
+- Note that some zone are smaller than 1 ha and have limited option to increase the size.
 
+- In Sunnside west zone 2 (Low - 311361) rate 0 doesnt have enough yield points to run t.test.
 
 
 
