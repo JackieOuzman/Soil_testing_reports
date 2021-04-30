@@ -17,6 +17,7 @@ library(ggplot2)
 
 library(formattable)
 library(sf)
+library(readxl)
 ```
 
 ## Number of N and P trials for 2020 -2021  season 
@@ -114,7 +115,7 @@ plot2 <-
   geom_bar() +
   theme_bw() +
   facet_wrap(.~Status)+
-  geom_text(aes(y = ((..count..)), label = ((..count..))), stat = "count", vjust = -0.25) +
+  #geom_text(aes(y = ((..count..)), label = ((..count..))), stat = "count", vjust = -0.25) +
   labs(
     title = "Number of P and N strip trials. 2020 to 2021 season",
     y = "Count",
@@ -212,6 +213,10 @@ and the grouping called 'no alt GPS' only contains one strip that reflect the gr
 
 I have created a new clm to adjusts this values.
 
+Note that some padocks included in this plot are 'pending edits', we have not yet confirmed the strips locations, zone, or fertiliser rates.
+
+This means that the final plot when all the data is finalised will look slightly different to the below one.
+
 
 ```{r plot3 number of strips, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -228,11 +233,12 @@ spatial_data_no_yld <- spatial_data_no_yld %>%
 
 
 plot3 <- distinct(spatial_data_no_yld, ID_trial_type , .keep_all = TRUE) %>% 
-  dplyr::select(Paddock_ID, StripCount2,  Strip_Type, Alt_GSP) %>%  
-  ggplot( aes(as.factor(StripCount2))) +
+  dplyr::select(Paddock_ID, StripCount2,  Strip_Type, Alt_GSP, Status) %>%  
+  ggplot( mapping =  aes(x = as.factor(StripCount2), fill = Status)) +
+  # ggplot( aes(as.factor(StripCount2))) +
   geom_bar() +
   theme_bw()+
-  geom_text(aes(y = ((..count..)), label = ((..count..))), stat = "count", vjust = -0.25) +
+  #geom_text(aes(y = ((..count..)), label = ((..count..))), stat = "count", vjust = -0.25) +
   labs(title = "Total number of strips per paddocks. 2020 to 2021 season", 
        y = "Count", 
        x = "Number of strips",
@@ -301,7 +307,7 @@ GSP_AltGSP_t_test_with_alt <- GSP_AltGSP_t_test %>%
 
 GSPvsAltGSP_plot <- GSP_AltGSP_t_test_with_alt %>%
   
-  ggplot( mapping = aes(x=Significant_practical ))+
+  ggplot( mapping = aes(x=Significant_practical, fill = Significant ))+
   geom_bar() +
   facet_grid(.~ Strip_Type)+
   theme_bw()+
@@ -309,7 +315,7 @@ GSPvsAltGSP_plot <- GSP_AltGSP_t_test_with_alt %>%
        #subtitle = "Strip with growers standard practice vs alternative growers standard practice",
        y = "Count of zones with a significant difference",
        x = "result of t - test (GSP vs. Alt GSP)",
-       subtitle = paste0("Total number of zones = ", count(distinct(GSP_AltGSP_t_test_with_alt, ID_analysis_zone_temp ))))
+       subtitle = paste0("Total number of zones (with alt GSP strip) = ", count(distinct(GSP_AltGSP_t_test_with_alt, ID_analysis_zone_temp ))))
 
 
 
@@ -360,27 +366,21 @@ The rainfall is assigned to rainfall class
 - high rainfall > 500 mm
 
 
-JAX Run step 1 again but this time include all of christina new clms
-
-JAX then filter the data to remove the exclude analsysis stuff
-
-Hopefully the number will match better
 
 ```{r plot4 rainfall, echo=FALSE, message=FALSE, warning=FALSE}
 
 
-#This run off 5 digit paddock code - so need to make sure it works ok with the new paddock code that have been added 
-#If I do this again - add the extra clm Christina has made to the output
-step1 <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/processing_files/step1_spatial_data_no_yld_2021-04-27.csv")
+step1 <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/processing_files/step1_spatial_data_no_yld_2021-04-30.csv")
 
 
-step1_paddocks <- step1 %>% 
-  distinct(ID_trial_type,join_field, .keep_all= TRUE) %>% 
-  dplyr::select(-"Rate"   ,
-                -"GSP" ,            
-                -"Strip_Rate" ,
-                -"Start_Fert" ,
-                -"Top_Dress")
+## some paddocks are excluded from the analysis
+step1 <- step1 %>% 
+  filter(Status != "Excluded from Analysis")
+
+step1_paddocks <- dplyr::distinct(step1, Paddock_ID ,Strip_Type, .keep_all = TRUE) 
+
+
+
 
 
 step1_paddocks <- step1_paddocks %>% 
@@ -394,16 +394,20 @@ step1_paddocks <- step1_paddocks %>%
 
 step1_paddocks$rainfall_class <- as.factor(step1_paddocks$rainfall_class)
 step1_paddocks$rainfall_class <- factor(step1_paddocks$rainfall_class, 
-                                             levels = c("high", "medium", "low"))
+                                        levels = c("high", "medium", "low"))
+
+
+
 
 plot4 <- distinct(step1_paddocks, ID_trial_type , .keep_all = TRUE) %>% 
   filter(Strip_Type == "N Strip" | Strip_Type =="P Strip") %>% 
-  dplyr::select(Paddock_ID, StripCount,  Strip_Type, Alt_GSP, av_rain, rainfall_class, ID_trial_type) %>%  
-  ggplot( aes(rainfall_class)) +
+  dplyr::select(Paddock_ID, StripCount,  Strip_Type, Alt_GSP, av_rain, rainfall_class, ID_trial_type, Status) %>%  
+  ggplot( mapping =  aes(x = rainfall_class, fill = Status)) +
+  #ggplot( aes(rainfall_class)) +
   geom_bar() +
   facet_grid(.~ Strip_Type)+
   theme_bw()+
-  geom_text(aes(y = ((..count..)), label = ((..count..))), stat = "count", vjust = -0.25) +
+  #geom_text(aes(y = ((..count..)), label = ((..count..))), stat = "count", vjust = -0.25) +
   labs(title = "Total number of strips per rainfall class 2020 to 2021 season", 
        y = "Count of paddocks", 
        x = "rainfall class",
@@ -412,6 +416,7 @@ plot4 <- distinct(step1_paddocks, ID_trial_type , .keep_all = TRUE) %>%
 
 
 plot4
+
 
 ```
 
@@ -436,47 +441,65 @@ Other products applied as a started and or topdress have also been captured.
 At this stage Therese doesn't want this included in the calculations for total N or P applied.
 
 
+The below products are only for sites where the report is complete (this is just a filter and can be changed easily).
+
+
 ### Products applied in N trials
 
 ```{r fert_applied product N, echo=FALSE, message=FALSE, warning=FALSE}
 
 
-
-
 fert_app_all_steps <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/processing_files/step2_fert_app_all_steps.csv")
 
-#str(fert_app_all_steps)
+
+
+
+## some paddocks are excluded from the analysis
+fert_app_all_steps <- fert_app_all_steps %>% 
+  filter(Status != "Excluded from Analysis")
+
+## some paddocks are excluded from the analysis
+fert_app_all_steps_report_complete <- fert_app_all_steps %>% 
+  filter(Status == "5. Report Complete")
 
 ## what is are the products applied N?
-N_products <- fert_app_all_steps %>% 
+N_products <- fert_app_all_steps_report_complete %>% 
   filter(Strip_Type == "N Strip")
 N_products <- N_products %>% 
   dplyr::select(Paddock_ID,
-  product_fert1, 
-  product_fert2, 
-  product_fert3,
-  Total_sum_N_content,
-  GSP,
-  av_rain)
+                product_fert1, 
+                product_fert2, 
+                product_fert3,
+                Total_sum_N_content,
+                GSP,
+                av_rain)
 N_products_narrow <- pivot_longer(N_products,
-                                 cols = c(product_fert1,
-                                 product_fert2,
-                                 product_fert3),
-                                 names_to = "product_order",
-                                 values_to = "product")
+                                  cols = c(product_fert1,
+                                           product_fert2,
+                                           product_fert3),
+                                  names_to = "product_order",
+                                  values_to = "product")
 N_products_narrow <- N_products_narrow %>% 
   dplyr::distinct(product, .keep_all = TRUE)
+
+
 
 N_products_narrow <- N_products_narrow %>% 
   dplyr::select(product)
 
 #print(N_products_narrow)
 # N_products_narrow
- N_products_narrow_df <- data.frame(N_products_narrow)
+N_products_narrow_df <- data.frame(N_products_narrow)
 # N_products_narrow_df
 
 N_products_narrow_df %>% 
   formattable(align = "l", - 1) 
+
+
+
+
+
+
 
 
 
@@ -487,8 +510,15 @@ N_products_narrow_df %>%
 
 ```{r fert_applied product P, echo=FALSE, message=FALSE, warning=FALSE}
 ## what is are the products applied P?
-P_products <- fert_app_all_steps %>% 
+
+
+
+P_products <- fert_app_all_steps_report_complete %>% 
   filter(Strip_Type == "P Strip")
+
+
+
+
 P_products <- P_products %>% 
   dplyr::select(Paddock_ID,
                 product_fert1, 
@@ -531,8 +561,12 @@ The results are a bit surprising as in the high rainfall zone the mean and mediu
 This may also reflect the trial designs not all paddocks had a zero strip (N applied = 0).
 There are more strips with zero N applied in the high rainfall zone.
 
+This is just for sites / strips that the report is complete.
+
 ```{r fert_applied in N, echo=FALSE, message=FALSE, warning=FALSE}
-N_applied <- fert_app_all_steps %>% 
+
+
+N_applied <- fert_app_all_steps_report_complete %>% 
   filter(Strip_Type == "N Strip")  %>% 
   filter((GSP !="Alt GSP")%>% 
            replace_na(TRUE)) %>% 
@@ -590,8 +624,12 @@ Note I have removed the 'Alt GSP' from this analysis.
 The results may reflect the trial design, not all paddocks had a zero strip (P applied = 0).
 There are more strips with zero P applied in the medium rainfall zone, than in the high or low rainfall zone.
 
+This is just for sites / strips that the report is complete.
+
 ```{r fert_applied in P, echo=FALSE, message=FALSE, warning=FALSE}
-P_applied <- fert_app_all_steps %>% 
+
+
+P_applied <- fert_app_all_steps_report_complete %>% 
   filter(Strip_Type == "P Strip")  %>% 
   filter((GSP !="Alt GSP")%>% 
            replace_na(TRUE)) %>% 
@@ -685,7 +723,7 @@ ggplot() + geom_sf(data = worldmap) +
 
 Different comparisons are made between fertilisers strips for each zone.
 
-Comparison of yield response in the strip / zone per paddock between:
+Comparison of yield response in the strip / zone per zone between:
 
 - High fertiliser rate vs low fertiliser rate (yield for high fert rate - yield for low fert rate)
 - High fertiliser rate vs medium fertiliser rate (yield for high fert rate - yield for medium fert rate)
@@ -709,6 +747,8 @@ high_low_comp <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/
 
 ### ricks table
 
+
+
 ## for P trials count to make a table
 high_low_P_N_trials <- high_low_comp %>%
   group_by(Strip_Type, comparison, yld_response) %>%
@@ -728,7 +768,7 @@ high_low_comp$comparison <-
 
 
 high_low_plot <-
-  ggplot(high_low_comp, mapping = aes(x = yld_response, fill = Significant)) +
+  ggplot(high_low_comp, mapping = aes(x = yld_response, fill = Significant_practical)) +
   geom_bar() +
   facet_grid(Strip_Type ~ comparison)+ 
   theme_bw() +
@@ -740,10 +780,11 @@ high_low_plot <-
       "negative" = "negative"
     )
   ) +
-    labs(
+  scale_fill_discrete(name="t.test result ")+
+  labs(
     title = "Comparison of yield response in strips with different fertiliser rate",
     subtitle = "The yield response is classed as positive when higher rates of fertiliser result in higher yields",
-    y = "Count of paddocks in yield response class",
+    y = "Count of zones in yield response class",
     x = "yield response"
   )
 high_low_plot
