@@ -1,12 +1,18 @@
 
+library(tidyverse)
+library(ggplot2)
 
+library(formattable)
+library(sf)
+library(readxl)
 ## the aim is to get this table more like what rick outlined.
 
-
+# bring in the yield results and t test for the comparision of interest
 high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/hign_low_t_test_merged_3b.csv")
 
 
 View(high_low_comp_t)
+# filter the data to one comparision - high vs low
 
 high_v_low_comp_results <- high_low_comp_t %>% 
   filter(comparison == "high_v_low") %>%  
@@ -42,7 +48,7 @@ high_v_low_comp_results <- high_v_low_comp_results %>%
 recom_rateDB <- read_excel( "W:/value_soil_testing_prj/Yield_data/2020/processing/GRDC 2020 Paddock Database_SA_VIC_April7 2021.xlsx")
 ##########################################################################################################################################
 
-
+# select only a few clms with recommedation 
 recom_rateDB <- recom_rateDB %>% 
   dplyr::select(Zone_ID =    `Paddock code` ,
                 p_rec =           `P rec`,
@@ -66,7 +72,7 @@ recom_rateDB <- recom_rateDB %>%
     )
   )
 
-
+# join Sean results with the comparision
  
 high_v_low_comp_results_Sean <- left_join(high_v_low_comp_results,recom_rateDB,
                           by = c(`Zone ID` = "Zone_ID" ))
@@ -98,7 +104,7 @@ Count_N_P <- high_v_low_comp_results_Sean %>%
   summarise(count = n())
 N_trails <- Count_N_P[1,2]
 P_trails <- Count_N_P[2,2]
-
+P_trails
 # count number of trials N and P for each yield resposne
 
 P_trials_lowVsHigh_fert <- high_v_low_comp_results_Sean %>% filter(Strip_Type == "P Strip" ) %>% 
@@ -129,11 +135,16 @@ Count_N_soil_test_likley_step1
 Count_N_soil_test_likley_step2 <- Count_N_soil_test_likley_step1 %>% 
   filter(Strip_Type == "N Strip" & soil_test_indicates == "respose likely" )
 Count_N_soil_test_likley <- Count_N_soil_test_likley_step2[[1,3]]
+
+
 # for p
 Count_p_soil_test_likley_step1 <- high_v_low_comp_results_Sean %>%
-  group_by(Strip_Type, soil_test_indicates) %>%
+  group_by(Strip_Type, soil_test_indicates, `yield response`) %>%
   summarise(count = n())
 Count_p_soil_test_likley_step1
 Count_p_soil_test_likley_step2 <- Count_p_soil_test_likley_step1 %>% 
   filter(Strip_Type == "P Strip" & soil_test_indicates == "respose likely" )
 Count_p_soil_test_likley <- Count_p_soil_test_likley_step2[[1,3]]
+
+Count_N_soil_test_likley
+Count_p_soil_test_likley
