@@ -8,7 +8,14 @@ output:
     df_print: paged
 ---
 
-```{r setup and load library, include=FALSE}
+```{r setup, echo=FALSE}
+# # opts_chunk$set(echo = FALSE, cache=FALSE)
+# # read_chunk('../src/closer_to_rick_tables.R')
+# 
+# source("closer_to_rick_tables.R", local = knitr::knit_global())
+```
+
+```{r load library, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 
@@ -18,6 +25,26 @@ library(ggplot2)
 library(formattable)
 library(sf)
 library(readxl)
+
+
+library(gt)
+library(glue)
+
+
+library(rnaturalearth)
+
+
+library(readr)
+
+library(DT)
+library(plotKML)
+library(knitr)
+library(png)
+
+
+library(magick)
+
+
 ```
 
 ## Number of N and P trials for 2020 -2021  season 
@@ -693,9 +720,6 @@ These pre harvest map contain:
 ```{r pressure, echo=FALSE, message=FALSE, warning=FALSE}
 #str(spatial_data_no_yld)
 
-library(ggplot2)
-library(sf)
-library(rnaturalearth)
 
 
 
@@ -853,7 +877,7 @@ high_v_low_comp_results %>%
 ## Medium fertiliser rate vs low fertiliser rate.
 
 
-```{r high vs med table part1, echo=FALSE, message=FALSE, warning=FALSE}
+```{r high vs med table part2, echo=FALSE, message=FALSE, warning=FALSE}
 #high low med comp high vs low  table rates
 
 
@@ -878,6 +902,25 @@ high_v_low_comp_results %>%
 
 ```
 
+
+
+## An altertaive way to show the yield resposne high, medium and low fertiliser rates.
+
+
+
+
+
+
+
+
+
+
+
+
+```{r high med display, echo=FALSE, message=TRUE, warning=FALSE}
+
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_medium_N.png")
+```
 
 ## Yield response to fertilisers application (growers rates compared to other rates)
 
@@ -958,7 +1001,7 @@ GR_comparison_plot
 ### GSP vs higher fertiliser rates
 
 
-```{r GPS  comp high table rates, echo=FALSE, message=FALSE, warning=FALSE}
+```{r GPS  comp high table rates1, echo=FALSE, message=FALSE, warning=FALSE}
 
 GR_comparison_higher_results <- GR_comparison %>%
   filter(comparison == "GSP_v_high") %>%
@@ -986,7 +1029,7 @@ GR_comparison_higher_results %>%
 ### GSP vs lower fertiliser rates
 
 
-```{r GPS  comp high table rates, echo=FALSE, message=FALSE, warning=FALSE}
+```{r GPS  comp high table rates2, echo=FALSE, message=FALSE, warning=FALSE}
 
 GR_comparison_lower_results <- GR_comparison %>%
   filter(comparison == "GSP_v_low") %>%

@@ -295,3 +295,5 @@ assign(paste0(comparison, "_", substr(Strip_type, start = 1, stop=1)),function_t
  medium_v_low_P
  medium_v_low_N
  
+ paste0(comparison, "_", substr(Strip_type, start = 1, stop=1))
+ 
