@@ -19,12 +19,23 @@ high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processin
 
 ##!!! User input required !!!! 1. Filter on comparison
 unique(high_low_comp_t$comparison)
+high_low_comp_t$comparison <- as.character(high_low_comp_t$comparison)
 
-comparison <-  "high_v_low"
+#comparison <-  "high_v_low"
+comparison <-  "high_v_medium"
+#comparison <-  "medium_v_low"
 
 
+##!!! User input required !!!!
+#Strip_type <-  "P Strip"
+Strip_type <-  "N Strip"
 ###############################################################################################
 # filter the data to one comparision - high vs low
+comparison[1]
+
+## is the filter working???
+high_v_low_comp_results <- high_low_comp_t %>% 
+  filter(comparison == as.character(comparison[1])) 
 
 high_v_low_comp_results <- high_low_comp_t %>% 
     filter(comparison == comparison[1]) %>%  
@@ -116,8 +127,7 @@ high_v_low_comp_results_Sean <- high_v_low_comp_results_Sean %>%
 ######################################################################################
 ######################################################################################
 ## filter set to strip type N or P
-##!!! User input required !!!!
-Strip_type <-  "P Strip"
+
 
 ##########################################################################################
 x_trials_lowVsHigh_fert <- high_v_low_comp_results_Sean %>% filter(Strip_Type == Strip_type[1] ) %>% 
@@ -209,9 +219,9 @@ Table_1 <- data.frame(rbind(table_mean,table_count ))
 Table_1 <-Table_1 %>%  dplyr::mutate(Strip_trial = Strip_type,
                                      comparision = comparison)
 
-
+Table_1
 #order table
-Table_1 <- Table_1 %>%  select(grouping, positive, no_response, negative,
+Table_1 <- Table_1 %>%  select(grouping, positive, no_response, negative,Sum,
                                summary, Strip_trial, comparision)
 
                              
@@ -239,4 +249,12 @@ name_table <- paste0(comparison, "_", substr(Strip_type, start = 1, stop = 1))
 
 assign(name_table, display_table)
 
-high_v_low_P
+name_table
+
+## check the output ##
+
+ high_v_low_P
+ high_v_low_N
+
+ high_v_medium_P
+ high_v_medium_N
