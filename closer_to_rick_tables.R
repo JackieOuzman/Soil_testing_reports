@@ -5,17 +5,27 @@ library(ggplot2)
 library(formattable)
 library(sf)
 library(readxl)
+
+#install.packages("gt")
+library(gt)
+
+library(glue)
 ## the aim is to get this table more like what rick outlined.
 
 # bring in the yield results and t test for the comparision of interest
 high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/hign_low_t_test_merged_3b.csv")
+###############################################################################################
+##1. Filter on comparison
+unique(high_low_comp_t$comparison)
+
+comparison <-  "high_v_low"
 
 
-View(high_low_comp_t)
+###############################################################################################
 # filter the data to one comparision - high vs low
 
 high_v_low_comp_results <- high_low_comp_t %>% 
-  filter(comparison == "high_v_low") %>%  
+    filter(comparison == comparison) %>%  
   dplyr::select('Zone ID' = Zone_ID,
                 Strip_Type,
                 
@@ -77,7 +87,7 @@ recom_rateDB <- recom_rateDB %>%
 high_v_low_comp_results_Sean <- left_join(high_v_low_comp_results,recom_rateDB,
                           by = c(`Zone ID` = "Zone_ID" ))
 
-names(high_v_low_comp_results_Sean)
+
 high_v_low_comp_results_Sean <-high_v_low_comp_results_Sean %>% 
   dplyr::select(-n_rec_yld_low,
                 -n_rec_yld_med,
@@ -93,58 +103,117 @@ high_v_low_comp_results_Sean <- high_v_low_comp_results_Sean %>%
     Strip_Type == 	"N Strip" & maxN <= 0 ~ "respose unlikely",
     TRUE ~ "NA"
   ))
+################################################################################################
+#### The data frame is now ready for summary stats.
+################################################################################################
 
 
-names(high_v_low_comp_results_Sean)
 
-
-# count number of trials N and P
-Count_N_P <- high_v_low_comp_results_Sean %>%
-  group_by(Strip_Type) %>%
-  summarise(count = n())
-N_trails <- Count_N_P[1,2]
-P_trails <- Count_N_P[2,2]
-P_trails
 # count number of trials N and P for each yield resposne
 
-P_trials_lowVsHigh_fert <- high_v_low_comp_results_Sean %>% filter(Strip_Type == "P Strip" ) %>% 
+######################################################################################
+## filter set to strip type N or P
+Strip_type <-  "P Strip"
+##########################################################################################
+x_trials_lowVsHigh_fert <- high_v_low_comp_results_Sean %>% filter(Strip_Type == Strip_type ) %>% 
   group_by(`yield response`) %>% 
-  summarise(count = n()) %>% 
-  mutate(freq = (count / P_trails[[1]])*100  )
+  summarise("count by fert type" = n())
  
-P_trials_lowVsHigh_fert
+x_soil_test_likley <-high_v_low_comp_results_Sean %>% 
+  filter(Strip_Type == "P Strip" ) %>% 
+  group_by(`yield response`, soil_test_indicates) %>% 
+  summarise("count by soil test" = n()) %>% 
+              arrange(soil_test_indicates)
+
+x_trials_lowVsHigh_fert  
+x_soil_test_likley 
+
+pivot1_count <- pivot_wider(x_trials_lowVsHigh_fert,
+            names_from = `yield response`, 
+            values_from = `count by fert type`) %>% 
+  mutate(grouping = "all")
+            
+
+pivot2_count <-pivot_wider(x_soil_test_likley,
+            names_from = `yield response`,
+            values_from = `count by soil test`) %>% 
+  rename(grouping = soil_test_indicates)
 
 
-N_trials_lowVsHigh_fert <- high_v_low_comp_results_Sean %>% filter(Strip_Type == "N Strip" ) %>% 
+pivot1_count
+pivot2_count
+
+table_count <- rbind(pivot1_count, pivot2_count)
+table_count
+## add a sum clm here
+#######################################################################################################
+### as above but with mean yield difference
+x_trials_lowVsHigh_fert_mean <- high_v_low_comp_results_Sean %>% filter(Strip_Type == Strip_type ) %>% 
   group_by(`yield response`) %>% 
-  summarise(count = n()) %>% 
-  mutate(freq = (count / N_trails[[1]])*100  )
+  summarise("Average of yield difference" = mean(`Mean yield difference`,na.rm = TRUE )) 
 
-N_trials_lowVsHigh_fert
+mean_soil_test_likley <-high_v_low_comp_results_Sean %>% 
+  filter(Strip_Type == Strip_type ) %>% 
+  group_by(`yield response`, soil_test_indicates) %>% 
+  summarise("Average of yield difference" = mean(`Mean yield difference`,na.rm = TRUE )) %>% 
+  arrange(soil_test_indicates)
 
+mean_soil_test_likley 
+x_trials_lowVsHigh_fert_mean
 
-## next step is to add the  soil_test_indicates
-names(high_v_low_comp_results_Sean)
-
-# count number of trials N and P
-# for N
-Count_N_soil_test_likley_step1 <- high_v_low_comp_results_Sean %>%
-  group_by(Strip_Type, soil_test_indicates) %>%
-  summarise(count = n())
-Count_N_soil_test_likley_step1
-Count_N_soil_test_likley_step2 <- Count_N_soil_test_likley_step1 %>% 
-  filter(Strip_Type == "N Strip" & soil_test_indicates == "respose likely" )
-Count_N_soil_test_likley <- Count_N_soil_test_likley_step2[[1,3]]
+pivot1_mean <- pivot_wider(x_trials_lowVsHigh_fert_mean,
+                            names_from = `yield response`, 
+                            values_from = `Average of yield difference`) %>% 
+  mutate(grouping = "all")
 
 
-# for p
-Count_p_soil_test_likley_step1 <- high_v_low_comp_results_Sean %>%
-  group_by(Strip_Type, soil_test_indicates, `yield response`) %>%
-  summarise(count = n())
-Count_p_soil_test_likley_step1
-Count_p_soil_test_likley_step2 <- Count_p_soil_test_likley_step1 %>% 
-  filter(Strip_Type == "P Strip" & soil_test_indicates == "respose likely" )
-Count_p_soil_test_likley <- Count_p_soil_test_likley_step2[[1,3]]
+pivot2_mean <-pivot_wider(mean_soil_test_likley,
+                           names_from = `yield response`,
+                           values_from = `Average of yield difference`) %>% 
+  rename(grouping = soil_test_indicates)
 
-Count_N_soil_test_likley
-Count_p_soil_test_likley
+
+pivot1_mean
+pivot2_mean
+table_mean <- rbind(pivot1_mean, pivot2_mean)
+table_mean
+
+#########################################################################################
+table_mean <- table_mean %>%  dplyr::mutate(summary = "mean yld difference")
+table_count <- table_count %>%  dplyr::mutate(summary = "count")
+
+Table_1 <- data.frame(rbind(table_mean,table_count ))
+
+Table_1 <-Table_1 %>%  dplyr::mutate(Strip_trial = Strip_type,
+                                     comparision = comparison)
+
+#decimal places in table
+Table_1 <- Table_1 %>%  mutate(
+  positive =      round(positive, digits = 2),
+  `no response` = round(no_response, digits = 2),
+  negative =     round(negative, digits = 2)
+)
+#order table
+Table_1 <- Table_1 %>%  select(grouping, positive, `no response`, negative,
+                               summary, Strip_trial, comparision)
+
+                             
+Table_1
+
+name_of_summary_table <- paste0("Yield Resposne to ", comparison, " fertiliser, for ", Strip_type)
+name_of_summary_table
+
+
+
+# Create a gt table based on preprocessed
+#  table data
+Table_1 %>%
+  #filter() %>%
+  #select() %>%
+  arrange(summary, grouping) %>% 
+  gt() %>%
+  tab_header(
+    title = name_of_summary_table,
+    subtitle = "all zones processed - missing data has no recom rate")
+  
+
