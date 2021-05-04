@@ -13,12 +13,12 @@ function_filter_data <- function(comparison,Strip_type, df ){
                   
                   `yield with fert lower than GSP` = lower_than_GSP,
                   `yield with fert higher than GSP` = higher_than_GSP,
-                 
+                  `yield for GSP` = the_GSP,
                   
                   GSP_vs_lower,         
                   GSP_vs_higher,
                   
-                  "yield response" = yld_response,
+                  'yield response' = yld_response,
                   `Significant` = Significant_practical) 
   df <- df %>% 
     arrange(`Zone ID`)
@@ -173,11 +173,11 @@ function_table <- function(comparison,Strip_type, df_step1 ){
   #table_mean
   
   table_mean <- table_mean %>%  mutate(
-    positive =      round(positive, digits = 3),
-    no_response = round(no_response, digits = 3),
-    negative =     round(negative, digits = 3)
+    positive =      round(positive, digits =  3),
+    no_response = round(no_response, digits =  3),
+    negative =     round(negative, digits =  3)
   )
-  
+
   
   #########################################################################################
   table_mean <- table_mean %>%  dplyr::mutate(summary = "mean yld difference", Sum = "NA")
@@ -232,27 +232,28 @@ unique(GR_comparison$comparison)
 #high_low_comp_t$comparison <- as.character(high_low_comp_t$comparison)
 #str(high_low_comp_t$comparison)
 
-#comparison <-  "GSP_v_high"
-comparison <-  "GSP_v_low"
+comparison <-  "GSP_v_high"
+#comparison <-  "GSP_v_low"
 
 
 
 ##!!! User input required !!!!
-#Strip_type <-  "P Strip"
-Strip_type <-  "N Strip"
+Strip_type <-  "P Strip"
+#Strip_type <-  "N Strip"
 
 df_step1 <- function_filter_data(comparison, Strip_type, GR_comparison) 
 
 comparison
-#names(df_step1)
+names(df_step1)
 
 df_step1 <- df_step1 %>%
   dplyr::select( ## which one?
-    #`Mean yield difference` = GSP_vs_higher,
-    `Mean yield difference` = GSP_vs_lower,
+    `Mean yield difference` = GSP_vs_higher,
+    #`Mean yield difference` = GSP_vs_lower,
     #plus all the others
     'Zone ID',
     Strip_Type,
+    `yield response`,
     'yield with fert lower than GSP',
     'yield with fert higher than GSP',
     'yield response',
