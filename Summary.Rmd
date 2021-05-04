@@ -919,7 +919,25 @@ high_v_low_comp_results %>%
 
 ```{r high med display, echo=FALSE, message=TRUE, warning=FALSE}
 
+# high_v_low_P
+# high_v_low_N
+# 
+# high_v_medium_P
+# high_v_medium_N
+# 
+# 
+# medium_v_low_N
+# medium_v_low_P
+
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_low_P.png")
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_low_N.png")
+
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_medium_P.png")
 include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_medium_N.png")
+
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/medium_v_low_P.png")
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/medium_v_low_N.png")
+
 ```
 
 ## Yield response to fertilisers application (growers rates compared to other rates)
@@ -1051,6 +1069,26 @@ GR_comparison_lower_results$`lower than GSP rate` = round(GR_comparison_lower_re
 GR_comparison_lower_results %>% 
   formattable(align = "l", - 1  )
 ```
+
+
+```{r GSP vs high low display, echo=FALSE, message=TRUE, warning=FALSE}
+
+# GSP_v_high_P
+# GSP_v_high_N
+# 
+# GSP_v_low_P
+# GSP_v_low_N
+
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/GSP_v_high_P.png")
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/GSP_v_high_N.png")
+
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/GSP_v_low_P.png")
+include_graphics("C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/GSP_v_low_N.png")
+
+
+```
+
+
 
 
 ## Yield response to fertilisers application (recommended rates compared to other rates)

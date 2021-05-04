@@ -2,35 +2,33 @@
 
 function_filter_data <- function(comparison,Strip_type, df ){
   comparison <- quo_name(comparison)
-  high_v_low_comp_results <- df %>% 
+  df <- df %>% 
     dplyr::filter(comparison == !!comparison) 
   
   
   #################################################################### 
-  high_v_low_comp_results <- high_v_low_comp_results %>% 
+  df <- df %>% 
     dplyr::select('Zone ID' = Zone_ID,
                   Strip_Type,
                   
-                  `yield with high fert` = high,
-                  `yield with low fert` = low,
-                  `yield with medium fert` = medium,
+                  `yield with fert lower than GSP` = lower_than_GSP,
+                  `yield with fert higher than GSP` = higher_than_GSP,
+                 
                   
-                  high_vs_low,         
-                  high_vs_medium,
-                  medium_vs_low,
-                  
+                  GSP_vs_lower,         
+                  GSP_vs_higher,
                   
                   "yield response" = yld_response,
                   `Significant` = Significant_practical) 
-  high_v_low_comp_results <- high_v_low_comp_results %>% 
+  df <- df %>% 
     arrange(`Zone ID`)
   
   
   ### round the values so the tabel looks better
-  high_v_low_comp_results <- high_v_low_comp_results %>% 
-    mutate( `yield with high fert` = round(`yield with high fert`, digits = 2),
-            `yield with low fert` = round(`yield with low fert`, digits = 2),
-            `yield with medium fert` = round(`yield with medium fert`, digits = 2))
+  df <- df %>% 
+    mutate( `yield with fert lower than GSP` = round(`yield with fert lower than GSP`, digits = 2),
+            `yield with fert higher than GSP` = round(`yield with fert higher than GSP`, digits = 2)
+            )
   
   
   
@@ -64,7 +62,7 @@ function_filter_data <- function(comparison,Strip_type, df ){
     )
   
   # join Sean results with the comparision
-  high_v_low_comp_results_Sean <- left_join(high_v_low_comp_results,recom_rateDB,
+  high_v_low_comp_results_Sean <- left_join(df,recom_rateDB,
                                             by = c(`Zone ID` = "Zone_ID" ))
   
   
@@ -224,37 +222,39 @@ function_table <- function(comparison,Strip_type, df_step1 ){
 ####################################################################################################################################
 
 
-high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/hign_low_t_test_merged_3b.csv")
-
+#high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/hign_low_t_test_merged_3b.csv")
+GR_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/GSP_low_high_comparision_t_test_merged_3d.csv")
+names(GR_comparison)
+unique(GR_comparison$comparison)
 
 ##!!! User input required !!!! 1. Filter on comparison
 # unique(high_low_comp_t$comparison)
 #high_low_comp_t$comparison <- as.character(high_low_comp_t$comparison)
 #str(high_low_comp_t$comparison)
 
-#comparison <-  "high_v_low"
-#comparison <-  "high_v_medium"
-comparison <-  "medium_v_low"
+#comparison <-  "GSP_v_high"
+comparison <-  "GSP_v_low"
+
 
 
 ##!!! User input required !!!!
-Strip_type <-  "P Strip"
-#Strip_type <-  "N Strip"
+#Strip_type <-  "P Strip"
+Strip_type <-  "N Strip"
 
-df_step1 <- function_filter_data(comparison, Strip_type, high_low_comp_t) 
+df_step1 <- function_filter_data(comparison, Strip_type, GR_comparison) 
+
+comparison
+#names(df_step1)
 
 df_step1 <- df_step1 %>%
   dplyr::select( ## which one?
-    #`Mean yield difference` = high_vs_low,
-    `Mean yield difference` = high_vs_medium,
-    #`Mean yield difference` = medium_vs_low,
-    
+    #`Mean yield difference` = GSP_vs_higher,
+    `Mean yield difference` = GSP_vs_lower,
     #plus all the others
     'Zone ID',
     Strip_Type,
-    'yield with high fert',
-    'yield with low fert',
-    'yield with medium fert',
+    'yield with fert lower than GSP',
+    'yield with fert higher than GSP',
     'yield response',
     Significant,
     p_rec,
@@ -269,18 +269,17 @@ assign(paste0(comparison, "_", substr(Strip_type, start = 1, stop=1)),function_t
 
 paste0(comparison, "_", substr(Strip_type, start = 1, stop=1))
 
-high_v_medium_N
-high_v_medium_P
+GSP_v_high_P
+GSP_v_high_N
 
-high_v_low_P
-high_v_low_N
+GSP_v_low_P
+GSP_v_low_N
 
-medium_v_low_N
-medium_v_low_P
 
-gtsave(high_v_medium_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_medium_N.png")
-gtsave(high_v_medium_P, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_medium_P.png")
-gtsave(high_v_low_P, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_low_P.png")
-gtsave(high_v_low_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_low_N.png")
-gtsave(medium_v_low_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/medium_v_low_N.png")
-gtsave(medium_v_low_P, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/medium_v_low_P.png")
+
+gtsave(GSP_v_high_P, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/GSP_v_high_P.png")
+gtsave(GSP_v_high_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/GSP_v_high_N.png")
+
+gtsave(GSP_v_low_P, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/GSP_v_low_P.png")
+gtsave(GSP_v_low_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/GSP_v_low_N.png")
+
