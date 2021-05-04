@@ -20,25 +20,25 @@ high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processin
 ##!!! User input required !!!! 1. Filter on comparison
 unique(high_low_comp_t$comparison)
 high_low_comp_t$comparison <- as.character(high_low_comp_t$comparison)
+str(high_low_comp_t$comparison)
 
 #comparison <-  "high_v_low"
-comparison <-  "high_v_medium"
-#comparison <-  "medium_v_low"
+#comparison <-  "high_v_medium"
+comparison <-  "medium_v_low"
 
 
 ##!!! User input required !!!!
 #Strip_type <-  "P Strip"
 Strip_type <-  "N Strip"
 ###############################################################################################
-# filter the data to one comparision - high vs low
-comparison[1]
+# filter the data to one comparision - 
 
-## is the filter working???
-high_v_low_comp_results <- high_low_comp_t %>% 
-  filter(comparison == as.character(comparison[1])) 
 
-high_v_low_comp_results <- high_low_comp_t %>% 
-    filter(comparison == comparison[1]) %>%  
+
+
+  
+  high_v_low_comp_results <- high_low_comp_t %>% 
+    filter(comparison == {{comparison}}) %>%  
   dplyr::select('Zone ID' = Zone_ID,
                 Strip_Type,
                 
@@ -258,3 +258,7 @@ name_table
 
  high_v_medium_P
  high_v_medium_N
+ 
+ medium_v_low_P
+ medium_v_low_N
+ 
