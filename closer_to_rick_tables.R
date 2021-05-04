@@ -15,7 +15,9 @@ library(glue)
 # bring in the yield results and t test for the comparision of interest
 high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/hign_low_t_test_merged_3b.csv")
 ###############################################################################################
-##1. Filter on comparison
+###############################################################################################
+
+##!!! User input required !!!! 1. Filter on comparison
 unique(high_low_comp_t$comparison)
 
 comparison <-  "high_v_low"
@@ -25,7 +27,7 @@ comparison <-  "high_v_low"
 # filter the data to one comparision - high vs low
 
 high_v_low_comp_results <- high_low_comp_t %>% 
-    filter(comparison == comparison) %>%  
+    filter(comparison == comparison[1]) %>%  
   dplyr::select('Zone ID' = Zone_ID,
                 Strip_Type,
                 
@@ -112,15 +114,18 @@ high_v_low_comp_results_Sean <- high_v_low_comp_results_Sean %>%
 # count number of trials N and P for each yield resposne
 
 ######################################################################################
+######################################################################################
 ## filter set to strip type N or P
+##!!! User input required !!!!
 Strip_type <-  "P Strip"
+
 ##########################################################################################
-x_trials_lowVsHigh_fert <- high_v_low_comp_results_Sean %>% filter(Strip_Type == Strip_type ) %>% 
+x_trials_lowVsHigh_fert <- high_v_low_comp_results_Sean %>% filter(Strip_Type == Strip_type[1] ) %>% 
   group_by(`yield response`) %>% 
   summarise("count by fert type" = n())
  
 x_soil_test_likley <-high_v_low_comp_results_Sean %>% 
-  filter(Strip_Type == "P Strip" ) %>% 
+  filter(Strip_Type == Strip_type[1] ) %>% 
   group_by(`yield response`, soil_test_indicates) %>% 
   summarise("count by soil test" = n()) %>% 
               arrange(soil_test_indicates)
@@ -145,7 +150,15 @@ pivot2_count
 
 table_count <- rbind(pivot1_count, pivot2_count)
 table_count
-## add a sum clm here
+
+table_count$Sum <- rowSums(table_count[,1:3], na.rm=TRUE)
+table_count <- table_count %>%  mutate(
+  positive =      round(positive, digits = 2),
+  no_response = round(no_response, digits = 2),
+  negative =     round(negative, digits = 2)
+)
+
+
 #######################################################################################################
 ### as above but with mean yield difference
 x_trials_lowVsHigh_fert_mean <- high_v_low_comp_results_Sean %>% filter(Strip_Type == Strip_type ) %>% 
@@ -178,42 +191,52 @@ pivot2_mean
 table_mean <- rbind(pivot1_mean, pivot2_mean)
 table_mean
 
+table_mean <- table_mean %>%  mutate(
+  positive =      round(positive, digits = 3),
+  no_response = round(no_response, digits = 3),
+  negative =     round(negative, digits = 3)
+)
+
 #########################################################################################
-table_mean <- table_mean %>%  dplyr::mutate(summary = "mean yld difference")
+table_mean <- table_mean %>%  dplyr::mutate(summary = "mean yld difference", Sum = "NA")
 table_count <- table_count %>%  dplyr::mutate(summary = "count")
+
+table_count
+table_mean
 
 Table_1 <- data.frame(rbind(table_mean,table_count ))
 
 Table_1 <-Table_1 %>%  dplyr::mutate(Strip_trial = Strip_type,
                                      comparision = comparison)
 
-#decimal places in table
-Table_1 <- Table_1 %>%  mutate(
-  positive =      round(positive, digits = 2),
-  `no response` = round(no_response, digits = 2),
-  negative =     round(negative, digits = 2)
-)
+
 #order table
-Table_1 <- Table_1 %>%  select(grouping, positive, `no response`, negative,
+Table_1 <- Table_1 %>%  select(grouping, positive, no_response, negative,
                                summary, Strip_trial, comparision)
 
                              
-Table_1
+
 
 name_of_summary_table <- paste0("Yield Resposne to ", comparison, " fertiliser, for ", Strip_type)
-name_of_summary_table
-
-
 
 # Create a gt table based on preprocessed
 #  table data
-Table_1 %>%
-  #filter() %>%
+
+
+
+display_table <- Table_1 %>%
+  filter(grouping != "NA") %>%
   #select() %>%
   arrange(summary, grouping) %>% 
   gt() %>%
   tab_header(
     title = name_of_summary_table,
-    subtitle = "all zones processed - missing data has no recom rate")
-  
+    subtitle = "all zones processed - missing data has no recom rate (data filtered out")
 
+
+ 
+name_table <- paste0(comparison, "_", substr(Strip_type, start = 1, stop = 1))
+
+assign(name_table, display_table)
+
+high_v_low_P
