@@ -238,16 +238,18 @@ comparison <-  "medium_v_low"
 
 
 ##!!! User input required !!!!
-Strip_type <-  "P Strip"
-#Strip_type <-  "N Strip"
+#Strip_type <-  "P Strip"
+Strip_type <-  "N Strip"
 
 df_step1 <- function_filter_data(comparison, Strip_type, high_low_comp_t) 
+
+
 
 df_step1 <- df_step1 %>%
   dplyr::select( ## which one?
     #`Mean yield difference` = high_vs_low,
-    `Mean yield difference` = high_vs_medium,
-    #`Mean yield difference` = medium_vs_low,
+    #`Mean yield difference` = high_vs_medium,
+    `Mean yield difference` = medium_vs_low,
     
     #plus all the others
     'Zone ID',
@@ -269,18 +271,20 @@ assign(paste0(comparison, "_", substr(Strip_type, start = 1, stop=1)),function_t
 
 paste0(comparison, "_", substr(Strip_type, start = 1, stop=1))
 
-high_v_medium_N
-high_v_medium_P
+high_v_low_P #done
+high_v_low_N #done
 
-high_v_low_P
-high_v_low_N
+high_v_medium_P #done
+high_v_medium_N #done
 
-medium_v_low_N
-medium_v_low_P
+medium_v_low_P #done
+medium_v_low_N #done
 
 gtsave(high_v_medium_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_medium_N.png")
 gtsave(high_v_medium_P, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_medium_P.png")
+
 gtsave(high_v_low_P, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_low_P.png")
 gtsave(high_v_low_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_low_N.png")
+
 gtsave(medium_v_low_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/medium_v_low_N.png")
 gtsave(medium_v_low_P, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/medium_v_low_P.png")
