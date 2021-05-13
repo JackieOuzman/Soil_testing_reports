@@ -115,11 +115,7 @@ paddock_done2020_display %>%
 
 Extra Notes:
 
-- More paddocks still go, data is reday just needs extracting:
 
-
-- Kris Dixon	Heighton	 Boort rd 
-- Kris Dixon	Heighton	 Greys north
 
 
 
@@ -154,17 +150,17 @@ site1 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
                 #(unique(paddock_done2020$Farmer)[1]),
                 "/output/")
 
- site2 <- paste0((unique(paddock_done2020$Farmer)[2]),"/",
+ site2 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
                  (unique(paddock_done2020$`Paddock tested`)[2]),
                  #(unique(paddock_done2020$Farmer)[2]),
                  "/output/")
  
- site3 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+ site3 <- paste0((unique(paddock_done2020$Farmer)[2]),"/",
                  (unique(paddock_done2020$`Paddock tested`)[3]),
                  #(unique(paddock_done2020$Farmer)[3]),
                  "/output/")
 
- site4 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
+ site4 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
                  (unique(paddock_done2020$`Paddock tested`)[4]),
                  "/output/")
 
@@ -345,7 +341,7 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site2
 
 ### Harvest map
 
-```{r display site 3, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display site 3, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
@@ -354,7 +350,7 @@ include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
 
 ### Yield trace
 
-```{r display site 3 yld trace, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display site 3 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
@@ -362,7 +358,7 @@ include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
 
 ### Results
 
-```{r display results site 3 page1, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display results site 3 page1, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 # image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
@@ -373,43 +369,43 @@ include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
 
 ```
 
-```{r display results site 3 page2, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display results site 3 page2, echo=FALSE, message=FALSE, warning=FALSE}
 
 
-# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>% 
-#   image_rotate(90)
-
-image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
   image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+#   image_rotate(90)
 
 ```
 
-
-
-
-```{r display site 4, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Site 4
 
 ### Harvest map
 
+
+```{r display site 4, echo=FALSE, message=FALSE, warning=FALSE}
+
+
 include_graphics(paste0(Growers_folder,site4,  harvest_map_site4))
 ```
-
-
-
-
-```{r display site 4 yld trace, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ### Yield trace
+
+
+
+```{r display site 4 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+
 include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 ```
 
-
-
-```{r display results site 4 Page 1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ### Results
 
-# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
-#   image_rotate(90)
+```{r display results site 4 Page 1, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
+  image_rotate(90)
 
 
 # image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site4, ".+Pg1"))) %>% 
@@ -544,10 +540,10 @@ fert_applied <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/p
 
 check_fert_applied <- fert_applied %>%
   dplyr::filter(
-    Paddock_ID == Paddock_selected_site1 |
-      Paddock_ID == Paddock_selected_site2 
-      #Paddock_ID == Paddock_selected_site3  
-      #Paddock_ID == Paddock_selected_site4 
+    Paddock_ID == Paddock_selected_site1   |
+      Paddock_ID == Paddock_selected_site2 |
+      Paddock_ID == Paddock_selected_site3 |
+      Paddock_ID == Paddock_selected_site4 
       #Paddock_ID == Paddock_selected_site5 
       # Paddock_ID == Paddock_selected_site6 |
       # Paddock_ID == Paddock_selected_site7
@@ -607,9 +603,9 @@ check_fert_applied %>%
 comments_frm_spatial_data <- spatial_data_no_yld_df %>% 
   dplyr::filter(
     Paddock_ID == Paddock_selected_site1 |
-      Paddock_ID == Paddock_selected_site2 
-      #Paddock_ID == Paddock_selected_site3 
-      #Paddock_ID == Paddock_selected_site4 
+      Paddock_ID == Paddock_selected_site2 |
+      Paddock_ID == Paddock_selected_site3 |
+      Paddock_ID == Paddock_selected_site4
       # Paddock_ID == Paddock_selected_site5 
       # Paddock_ID == Paddock_selected_site6 |
       # Paddock_ID == Paddock_selected_site7
@@ -640,9 +636,9 @@ GSP_AltGSP_t_test <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/process
 GSPvsAltGSP_plot <- GSP_AltGSP_t_test %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-      paddock_ID == Paddock_selected_site2 
-      #paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+      paddock_ID == Paddock_selected_site2 |
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       # paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -675,9 +671,9 @@ GSPvsAltGSP_plot
 GSP_AltGSP_t_test_display <- GSP_AltGSP_t_test %>% 
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2| 
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       #paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -742,9 +738,9 @@ high_low_comp <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/
 high_low_comp <- high_low_comp %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2 |
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       # paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -835,9 +831,9 @@ high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processin
 high_low_comp_t <- high_low_comp_t %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2| 
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       #paddock_ID == Paddock_selected_site5 
     #   paddock_ID == Paddock_selected_site6 |
     # paddock_ID == Paddock_selected_site7
@@ -945,9 +941,9 @@ GR_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing
 GR_comparison <- GR_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2| 
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       # paddock_ID == Paddock_selected_site5 
        # paddock_ID == Paddock_selected_site6 |
        # paddock_ID == Paddock_selected_site7
@@ -1153,9 +1149,9 @@ Rec_rate_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/proc
 Rec_rate_comparison <- Rec_rate_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2| 
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       #paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -1197,7 +1193,7 @@ Rec_rate_comparison_plot
 ```
 
 
-```{r rec rate comp high low plot N, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r rec rate comp high low plot N, echo=FALSE, message=FALSE, warning=FALSE}
 
 Rec_rate_comparison_N <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e_N.csv")
 
@@ -1206,9 +1202,9 @@ Rec_rate_comparison_N <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/pr
 Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2 |
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       #paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -1306,9 +1302,9 @@ paddock_details_join <- distinct(paddock_details, `Paddock code`, .keep_all = TR
 paddock_details_join <- paddock_details_join %>%
   dplyr::filter(
       paddock5_digits == Paddock_selected_site1 |
-       paddock5_digits == Paddock_selected_site2 
-      # paddock5_digits == Paddock_selected_site3 
-      #paddock5_digits == Paddock_selected_site4 
+       paddock5_digits == Paddock_selected_site2| 
+      paddock5_digits == Paddock_selected_site3|
+      paddock5_digits == Paddock_selected_site4
       #paddock5_digits == Paddock_selected_site5 
       # paddock5_digits == Paddock_selected_site6 |
       # paddock5_digits == Paddock_selected_site7
@@ -1324,9 +1320,9 @@ Rec_rate_comparison_N <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/pr
 Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2 |
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       #paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -1376,9 +1372,9 @@ Rec_rate_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/proc
 Rec_rate_comparison <- Rec_rate_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-     # paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2 |
+     paddock_ID == Paddock_selected_site3|
+     paddock_ID == Paddock_selected_site4
       #paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -1462,9 +1458,9 @@ Rec_rate_comparison_N <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/pr
 Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2| 
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
      # paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -1474,10 +1470,10 @@ Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
 Rec_rate_comparison_N <- left_join(Rec_rate_comparison_N, paddock_details_join, by= c("Zone_ID" = "Zone ID"))
 # #! we have a problem with "524102" in  check_fert_applied and  52410 in paddock_details (5 digits)
 # #So when Paddock ID 52410 I will enter the farmer and paddoock tested Farmer = Pole	, `Paddock tested` = Gums
- Rec_rate_comparison_N <- Rec_rate_comparison_N %>% 
-   mutate(`Paddock tested` = case_when(
-     paddock_ID == 524102 ~ "Gums",
-     TRUE ~ `Paddock tested`))
+ # Rec_rate_comparison_N <- Rec_rate_comparison_N %>% 
+ #   mutate(`Paddock tested` = case_when(
+ #     paddock_ID == 524102 ~ "Gums",
+ #     TRUE ~ `Paddock tested`))
 
 
 Rec_rate_comparison_table_lower_rates_N <- Rec_rate_comparison_N %>% 
@@ -1512,9 +1508,9 @@ Rec_rate_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/proc
 Rec_rate_comparison <- Rec_rate_comparison %>%
   dplyr::filter(
     paddock_ID == Paddock_selected_site1 |
-       paddock_ID == Paddock_selected_site2 
-      # paddock_ID == Paddock_selected_site3 
-      #paddock_ID == Paddock_selected_site4 
+       paddock_ID == Paddock_selected_site2 |
+      paddock_ID == Paddock_selected_site3|
+      paddock_ID == Paddock_selected_site4
       #paddock_ID == Paddock_selected_site5 
       # paddock_ID == Paddock_selected_site6 |
       # paddock_ID == Paddock_selected_site7
@@ -1601,7 +1597,7 @@ Notes should be made in the below file:
 # Couple of checks and comments from Sean and Harms database.
 ```{r Sean and Harms DB, echo=FALSE, message=FALSE, warning=FALSE}
 
-recom_rateDB <- read_excel( "W:/value_soil_testing_prj/Yield_data/2020/processing/GRDC 2020 Paddock Database_SA_VIC_April7 2021.xlsx")
+recom_rateDB <- read_excel( "W:/value_soil_testing_prj/Yield_data/2020/processing/GRDC 2020 Paddock Database_SA_VIC_May05 2021.xlsx")
 ##########################################################################################################################################
 
 
@@ -1618,6 +1614,7 @@ recom_rateDB <- recom_rateDB %>%
 
 recom_rateDB <-  dplyr::mutate(recom_rateDB,  maxN = apply(recom_rateDB[3:5], 1, max, na.rm = TRUE))
 
+recom_rateDB$Zone_ID <- as.double(recom_rateDB$Zone_ID)
 
 # remove redunant clm and replace inf
 recom_rateDB <- recom_rateDB %>% 
@@ -1638,8 +1635,8 @@ recom_rateDB <- recom_rateDB %>%
   dplyr::filter(
     paddock5_digits == Paddock_selected_site1 |
     paddock5_digits == Paddock_selected_site2 |
-    paddock5_digits == Paddock_selected_site3  
-    # paddock5_digits == Paddock_selected_site4 
+    paddock5_digits == Paddock_selected_site3  |
+     paddock5_digits == Paddock_selected_site4 
     # paddock5_digits == Paddock_selected_site5 |
     # paddock5_digits == Paddock_selected_site6 |
     # paddock5_digits == Paddock_selected_site7 
