@@ -367,7 +367,7 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site2
 
 ### Harvest map
 
-```{r display site 3, echo=FALSE, message=FALSE, warning=FALSE}
+```{r display site 3, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 
 include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
@@ -376,7 +376,7 @@ include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
 ### Yield trace
 
 
-```{r display site 3 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+```{r display site 3 yld trace, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 
 include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
@@ -384,11 +384,11 @@ include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
 
 ### Results
 
-```{r display results site 3 page1, echo=FALSE, message=FALSE, warning=FALSE}
+```{r display results site 3 page1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 
-image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
-  image_rotate(90)
+# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
+#   image_rotate(90)
 
 # image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg1"))) %>% 
 #   image_rotate(90)
@@ -410,7 +410,7 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3
 
 ### Harvest map
 
-```{r display site 4, echo=FALSE, message=FALSE, warning=FALSE}
+```{r display site 4, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 
 
@@ -420,7 +420,7 @@ include_graphics(paste0(Growers_folder,site4,  harvest_map_site4))
 
 ### Yield trace
 
-```{r display site 4 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+```{r display site 4 yld trace, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 ```
@@ -428,10 +428,10 @@ include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 
 ### Results
 
-```{r display results site 4 Page 1, echo=FALSE, message=FALSE, warning=FALSE}
+```{r display results site 4 Page 1, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
-image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
-  image_rotate(90)
+# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
+#   image_rotate(90)
 
 
 # image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site4, ".+Pg1"))) %>% 
