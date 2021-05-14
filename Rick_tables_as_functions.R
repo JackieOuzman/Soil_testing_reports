@@ -1,4 +1,28 @@
 
+library(tidyverse)
+library(ggplot2)
+
+library(formattable)
+library(sf)
+library(readxl)
+
+
+library(gt)
+library(glue)
+
+
+library(rnaturalearth)
+
+
+library(readr)
+
+library(DT)
+library(plotKML)
+library(knitr)
+library(png)
+
+
+library(magick)
 
 function_filter_data <- function(comparison,Strip_type, df ){
   comparison <- quo_name(comparison)
@@ -77,8 +101,8 @@ function_filter_data <- function(comparison,Strip_type, df ){
   
   high_v_low_comp_results_Sean <- high_v_low_comp_results_Sean %>% 
     mutate(soil_test_indicates = case_when(
-      Strip_Type == 	"P Strip" & p_rec > 0 ~ "respose likely",
-      Strip_Type == 	"P Strip" & p_rec <= 0 ~ "respose unlikely",
+      Strip_Type == 	"P Strip" & p_rec > 5 ~ "respose likely",
+      Strip_Type == 	"P Strip" & p_rec <= 5 ~ "respose unlikely",
       Strip_Type == 	"N Strip" & maxN > 0 ~ "respose likely",
       Strip_Type == 	"N Strip" & maxN <= 0 ~ "respose unlikely",
       TRUE ~ "NA"
@@ -195,7 +219,7 @@ function_table <- function(comparison,Strip_type, df_step1 ){
   
   Table_1
   #order table
-  Table_1 <- Table_1 %>%  select(grouping, positive, no_response, negative,Sum,
+  Table_1 <- Table_1 %>%  dplyr::select(grouping, positive, no_response, negative,Sum,
                                  summary, Strip_trial, comparision)
   
   
@@ -222,7 +246,7 @@ function_table <- function(comparison,Strip_type, df_step1 ){
 ####################################################################################################################################
 ####################################################################################################################################
 ####################################################################################################################################
-
+rm(list = c('high_low_comp_t','df_step1'))
 
 high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/hign_low_t_test_merged_3b.csv")
 
@@ -241,9 +265,18 @@ comparison <-  "medium_v_low"
 #Strip_type <-  "P Strip"
 Strip_type <-  "N Strip"
 
+
+
+# str(comparison)
+# str(Strip_type)
+# str(high_low_comp_t)  
+
+  
+## call the first function to filter the data
 df_step1 <- function_filter_data(comparison, Strip_type, high_low_comp_t) 
 
-
+str(df_step1)
+## !!! this is manual step that requires the selection below
 
 df_step1 <- df_step1 %>%
   dplyr::select( ## which one?
@@ -267,17 +300,25 @@ df_step1 <- df_step1 %>%
     soil_test_indicates) %>% 
   mutate(`Mean yield difference` = round(`Mean yield difference`, digits = 2))             
 
-assign(paste0(comparison, "_", substr(Strip_type, start = 1, stop=1)),function_table(comparison,Strip_type, df_step1) )
+
+### now call the function 2 the table
+
+assign(paste0(comparison, "_", substr(Strip_type, start = 1, stop=1)),
+       function_table(comparison,Strip_type, df_step1) )
+
+
+
+
 
 paste0(comparison, "_", substr(Strip_type, start = 1, stop=1))
 
 high_v_low_P #done
 high_v_low_N #done
 
-high_v_medium_P #done
-high_v_medium_N #done
+high_v_medium_P # done
+high_v_medium_N # done
 
-medium_v_low_P #done
+medium_v_low_P # done
 medium_v_low_N #done
 
 gtsave(high_v_medium_N, "C:/Users/ouz001/working_from_home/soil_testing/Soil_testing_reports/high_v_medium_N.png")

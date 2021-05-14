@@ -1,4 +1,17 @@
-
+library(tidyverse)
+library(ggplot2)
+library(formattable)
+library(sf)
+library(readxl)
+library(gt)
+library(glue)
+library(rnaturalearth)
+library(readr)
+library(DT)
+library(plotKML)
+library(knitr)
+library(png)
+library(magick)
 
 function_filter_data <- function(comparison,Strip_type, df ){
   comparison <- quo_name(comparison)
@@ -75,8 +88,8 @@ function_filter_data <- function(comparison,Strip_type, df ){
   
   high_v_low_comp_results_Sean <- high_v_low_comp_results_Sean %>% 
     mutate(soil_test_indicates = case_when(
-      Strip_Type == 	"P Strip" & p_rec > 0 ~ "respose likely",
-      Strip_Type == 	"P Strip" & p_rec <= 0 ~ "respose unlikely",
+      Strip_Type == 	"P Strip" & p_rec > 5 ~ "respose likely",
+      Strip_Type == 	"P Strip" & p_rec <= 5 ~ "respose unlikely",
       Strip_Type == 	"N Strip" & maxN > 0 ~ "respose likely",
       Strip_Type == 	"N Strip" & maxN <= 0 ~ "respose unlikely",
       TRUE ~ "NA"
@@ -193,7 +206,7 @@ function_table <- function(comparison,Strip_type, df_step1 ){
   
   Table_1
   #order table
-  Table_1 <- Table_1 %>%  select(grouping, positive, no_response, negative,Sum,
+  Table_1 <- Table_1 %>%  dplyr::select(grouping, positive, no_response, negative,Sum,
                                  summary, Strip_trial, comparision)
   
   
@@ -220,7 +233,7 @@ function_table <- function(comparison,Strip_type, df_step1 ){
 ####################################################################################################################################
 ####################################################################################################################################
 ####################################################################################################################################
-
+rm(list = c('GR_comparison','df_step1'))
 
 #high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/hign_low_t_test_merged_3b.csv")
 GR_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/GSP_low_high_comparision_t_test_merged_3d.csv")
@@ -232,14 +245,14 @@ unique(GR_comparison$comparison)
 #high_low_comp_t$comparison <- as.character(high_low_comp_t$comparison)
 #str(high_low_comp_t$comparison)
 
-comparison <-  "GSP_v_high"
-#comparison <-  "GSP_v_low"
+#comparison <-  "GSP_v_high"
+comparison <-  "GSP_v_low"
 
 
 
 ##!!! User input required !!!!
-Strip_type <-  "P Strip"
-#Strip_type <-  "N Strip"
+#Strip_type <-  "P Strip"
+Strip_type <-  "N Strip"
 
 df_step1 <- function_filter_data(comparison, Strip_type, GR_comparison) 
 
@@ -248,8 +261,8 @@ names(df_step1)
 
 df_step1 <- df_step1 %>%
   dplyr::select( ## which one?
-    `Mean yield difference` = GSP_vs_higher,
-    #`Mean yield difference` = GSP_vs_lower,
+    #`Mean yield difference` = GSP_vs_higher,
+    `Mean yield difference` = GSP_vs_lower,
     #plus all the others
     'Zone ID',
     Strip_Type,
@@ -270,11 +283,11 @@ assign(paste0(comparison, "_", substr(Strip_type, start = 1, stop=1)),function_t
 
 paste0(comparison, "_", substr(Strip_type, start = 1, stop=1))
 
-GSP_v_high_P
-GSP_v_high_N
+GSP_v_high_P #done
+GSP_v_high_N #done
 
-GSP_v_low_P
-GSP_v_low_N
+GSP_v_low_P #done
+GSP_v_low_N #done
 
 
 
