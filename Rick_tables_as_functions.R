@@ -1,27 +1,17 @@
 
 library(tidyverse)
 library(ggplot2)
-
 library(formattable)
 library(sf)
 library(readxl)
-
-
 library(gt)
 library(glue)
-
-
 library(rnaturalearth)
-
-
 library(readr)
-
 library(DT)
 library(plotKML)
 library(knitr)
 library(png)
-
-
 library(magick)
 
 function_filter_data <- function(comparison,Strip_type, df ){
