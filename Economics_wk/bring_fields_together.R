@@ -59,10 +59,18 @@ GS_rates_3a <- GS_rates_3a %>%
 GS_rates_3a <- GS_rates_3a %>% 
   dplyr::mutate(fld_for_join = paste0(paddock_code,"_", Details,"_",Strip_Type))
 
-                 
-                
-rainfall_fert <- rainfall_fert %>% 
+### need to remove the Alt GPS from the rainfall data                
+#names(rainfall_fert)
+#unique(rainfall_fert$GSP)
+#str(rainfall_fert$GSP)
+rainfall_fert$GSP <- as.character(rainfall_fert$GSP)
+rainfall_fert <- rainfall_fert %>%   
+  filter(is.na(GSP) | GSP == "GSP")
   
+
+
+
+  rainfall_fert <- rainfall_fert %>% 
   dplyr::mutate(fld_for_join = paste0(Paddock_ID,"_", Strip_Rate, "_",Strip_Type))
 
   str(GS_rates_3a) 
@@ -189,6 +197,9 @@ GS_rates_rain_fert_rec <- GS_rates_rain_fert_rec %>%
          Fld_Join_Approx2 = paste0(Zone_ID, Strip_Type, Details)) 
 ### join on this new field
 
+# the remov rate from my work has decmile places best to use Sean...
+names(rec_rate_approx_N_P)
+rec_rate_approx_N_P <- rec_rate_approx_N_P %>%  dplyr::select(-rec_rate)
 df <- left_join(GS_rates_rain_fert_rec, rec_rate_approx_N_P, by = "Fld_Join_Approx1")
 
 names(df)
@@ -200,8 +211,9 @@ df <- df %>%
                 Strip_Type = Strip_Type.x,
                 Details,
                 P_content = Total_sum_P_content,
-                N_content =maxN,
-                rec_rate,
+                N_content = Total_sum_N_content,
+                p_rec,
+                n_rec = maxN,
                 rec_rate_appox,
                 Fld_Join_Approx1,
                 yield,
@@ -248,3 +260,7 @@ df <-  df %>%
     rec_rate_appox_value = case_when(
       rec_rate_appox == Details ~ N_P_content
     ))
+
+
+## let output this and check it with some stuff....
+write.csv(df, "W:/value_soil_testing_prj/Economics/2020/draft_v1.csv")
