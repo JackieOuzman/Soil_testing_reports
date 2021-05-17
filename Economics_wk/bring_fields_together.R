@@ -42,17 +42,30 @@ str(rainfall_fert$Paddock_ID) #this is the paddock code with 5 digits
 
 #make a field for joining in both df.
 str(GS_rates_3a)
+GS_rates_3a$Strip_Type <- sub("^[^_]*_", "", GS_rates_3a$paddock_ID_Type)
+
+
+# I cant use a paddock code 5 digits for everything because zone code are now a mix of 6 and 7 digits
+#What paddocks have 7 digit codes?
+
+GS_rates_3a$length_zoneID <- nchar(GS_rates_3a$Zone_ID)
+#remove last value in string
+GS_rates_3a <- GS_rates_3a %>% 
+  mutate(paddock_code =   
+           case_when(length_zoneID == 6 ~ substr(Zone_ID, start = 1, stop = 5),
+                     length_zoneID == 7 ~ substr(Zone_ID, start = 1, stop = 6)))
+
 
 GS_rates_3a <- GS_rates_3a %>% 
-  dplyr::mutate(paddock5_digits = substr(Zone_ID, start = 1, stop = 5),
-                Strip_Type = substr(paddock_ID_Type, start = 7, stop = 13),
-                fld_for_join = paste0(paddock5_digits,"_", Details,"_",Strip_Type))
+  dplyr::mutate(fld_for_join = paste0(paddock_code,"_", Details,"_",Strip_Type))
 
-                  
+                 
                 
 rainfall_fert <- rainfall_fert %>% 
+  
   dplyr::mutate(fld_for_join = paste0(Paddock_ID,"_", Strip_Rate, "_",Strip_Type))
-str(GS_rates_3a) 
+
+  str(GS_rates_3a) 
 str(rainfall_fert)
 ##########################################################################################################################################
 #3.  join togther 
@@ -131,7 +144,8 @@ GS_rates_rain_fert_rec <- GS_rates_rain_fert_rec %>%
     TRUE ~ "NA"
   ))
 
-
+# just keep the joined data.
+rm(list = ls()[!ls() %in% c("GS_rates_rain_fert_rec")])
 ##########################################################################################################################################
 #5. join approx recom rate labels - this will be diffiucult
 ##########################################################################################################################################
@@ -139,9 +153,98 @@ rec_rate_approx_P <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/process
   
 names(rec_rate_approx_P)                            
 rec_rate_approx_P <- dplyr::select(rec_rate_approx_P,
-                                  Zone_ID, rec_rate_p, Strip_Type)
+                                  Zone_ID, rec_rate_p, Strip_Type, rec_rate_p_label)
                                    
 rec_rate_approx_N <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e_N.csv")
-                                  
+names(rec_rate_approx_N)                                 
 rec_rate_approx_N <- dplyr::select(rec_rate_approx_N,
-                                   Zone_ID, rec_rate_n, Strip_Type)
+                                   Zone_ID, rec_rate_n, Strip_Type, rec_rate_n_label)
+#change the name so I have a clm called rec rates
+
+rec_rate_approx_P <- rec_rate_approx_P %>%
+  rename(rec_rate = rec_rate_p,
+         rec_rate_appox = rec_rate_p_label)
+
+
+rec_rate_approx_N <- rec_rate_approx_N %>%
+  rename(rec_rate = rec_rate_n,
+         rec_rate_appox = rec_rate_n_label)
+
+
+# append the rec rates into one df
+rec_rate_approx_N_P <- rbind(rec_rate_approx_P, rec_rate_approx_N)
+
+rm(rec_rate_approx_N, rec_rate_approx_P)
+
+###########################################################################################################
+# create a field that I is unquie to join the two data frames togther.
+names(rec_rate_approx_N_P)
+rec_rate_approx_N_P <- rec_rate_approx_N_P %>% 
+  mutate(Fld_Join_Approx1 = paste0(Zone_ID, Strip_Type),
+         Fld_Join_Approx2 = paste0(Zone_ID, Strip_Type, rec_rate_appox))
+
+names(GS_rates_rain_fert_rec)
+GS_rates_rain_fert_rec <- GS_rates_rain_fert_rec %>% 
+  mutate(Fld_Join_Approx1 = paste0(Zone_ID, Strip_Type),
+         Fld_Join_Approx2 = paste0(Zone_ID, Strip_Type, Details)) 
+### join on this new field
+
+df <- left_join(GS_rates_rain_fert_rec, rec_rate_approx_N_P, by = "Fld_Join_Approx1")
+
+names(df)
+
+df <- df %>% 
+  dplyr::select(Zone_ID =Zone_ID.x,
+                Rate,
+                GSP,
+                Strip_Type = Strip_Type.x,
+                Details,
+                P_content = Total_sum_P_content,
+                N_content =maxN,
+                rec_rate,
+                rec_rate_appox,
+                Fld_Join_Approx1,
+                yield,
+                av_rain,
+                Significant_practical,
+                organisati,             
+                contact,
+                farmer,
+                paddock)
+#########################################################################################################
+### make a clm that is has P content and N content in same clm called P_N_content.
+
+df <- df %>% 
+  mutate(
+    N_P_content = case_when(
+    Strip_Type == "P Strip" ~ P_content,
+    Strip_Type == "N Strip" ~ N_content
+  ))
+names(df)
+
+
+# check <- df %>% 
+#  dplyr::select(Zone_ID ,
+#                Rate,
+#                GSP,
+#                Strip_Type ,
+#                P_content,
+#                N_content,N_P_content)
+names(df)
+#str(df$Details)
+#str(df$rec_rate_appox)
+
+df$Details <- as.character(df$Details)
+df$rec_rate_appox <- as.character(df$rec_rate_appox)
+
+df <-  df %>% 
+  mutate(
+    rec_rate_label = case_when(
+      rec_rate_appox == Details ~ "closest_match"
+    ))
+
+df <-  df %>% 
+  mutate(
+    rec_rate_appox_value = case_when(
+      rec_rate_appox == Details ~ N_P_content
+    ))
