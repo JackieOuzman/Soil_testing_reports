@@ -538,7 +538,8 @@ temp_df <- df %>%
                 the_GSP_label,
                 lower_than_GSP_label,
                 GM,
-                yield)
+                yield,
+                Cost_P_N_dollar_ha)
 
 
 #1. GM for higher than GSP rate
@@ -573,6 +574,23 @@ temp_df <- temp_df %>%
   mutate(YLD_lower_than_GSP_rate = case_when(
     lower_than_GSP_label == Rate ~ yield
   ))
+
+#7. cost_P_N$_ha for higher than GSP rate
+temp_df <- temp_df %>%
+  mutate(cost_NP_higher_than_GSP_rate = case_when(
+    higher_than_GSP_label == Rate ~ Cost_P_N_dollar_ha
+  ))
+#8. cost_P_N$_ha for the GSP rate
+temp_df <- temp_df %>%
+  mutate(cost_NP_GSP_rate = case_when(
+    the_GSP_label == Rate ~ Cost_P_N_dollar_ha
+  ))
+#9. cost_P_N$_ha for lower than GSP rate
+temp_df <- temp_df %>%
+  mutate(cost_NP_lower_than_GSP_rate = case_when(
+    lower_than_GSP_label == Rate ~ Cost_P_N_dollar_ha
+  ))
+
 ## condense this so I have one line for each zone
 names(temp_df)
 temp_df1 <- temp_df %>% 
@@ -583,17 +601,28 @@ temp_df1 <- temp_df %>%
             
             YLD_higher_than_GSP_rate = round(max(YLD_higher_than_GSP_rate, na.rm = TRUE),4),
             YLD_GSP_rate             = round(max(YLD_GSP_rate, na.rm = TRUE),4),
-            YLD_lower_than_GSP_rate  = round(max(YLD_lower_than_GSP_rate, na.rm = TRUE),4)
+            YLD_lower_than_GSP_rate  = round(max(YLD_lower_than_GSP_rate, na.rm = TRUE),4),
+            
+            cost_NP_higher_than_GSP_rate = round(max(cost_NP_higher_than_GSP_rate, na.rm = TRUE),4),
+            cost_NP_GSP_rate             = round(max(cost_NP_GSP_rate, na.rm = TRUE),4),
+            cost_NP_lower_than_GSP_rate  = round(max(cost_NP_lower_than_GSP_rate, na.rm = TRUE),4)
             )
 
 names(temp_df1)
-temp_df1 <- temp_df1 %>% mutate(GM_higher_than_GSP_rate = na_if(GM_higher_than_GSP_rate, -Inf),
-                                GM_GSP_rate = na_if(GM_GSP_rate, -Inf),
-                                GM_lower_than_GSP_rate = na_if(GM_lower_than_GSP_rate, -Inf),
-                                 
-                                 YLD_higher_than_GSP_rate = na_if(YLD_higher_than_GSP_rate, -Inf),
-                                 YLD_GSP_rate = na_if(YLD_GSP_rate, -Inf),
-                                 YLD_lower_than_GSP_rate = na_if(YLD_lower_than_GSP_rate, -Inf))
+temp_df1 <-
+  temp_df1 %>% mutate(
+    GM_higher_than_GSP_rate = na_if(GM_higher_than_GSP_rate,-Inf),
+    GM_GSP_rate = na_if(GM_GSP_rate,-Inf),
+    GM_lower_than_GSP_rate = na_if(GM_lower_than_GSP_rate,-Inf),
+    
+    YLD_higher_than_GSP_rate = na_if(YLD_higher_than_GSP_rate,-Inf),
+    YLD_GSP_rate = na_if(YLD_GSP_rate,-Inf),
+    YLD_lower_than_GSP_rate = na_if(YLD_lower_than_GSP_rate,-Inf),
+    
+    cost_NP_higher_than_GSP_rate = na_if(cost_NP_higher_than_GSP_rate,-Inf),
+    cost_NP_GSP_rate = na_if(cost_NP_GSP_rate,-Inf),
+    cost_NP_lower_than_GSP_rate = na_if(cost_NP_lower_than_GSP_rate,-Inf)
+  )
 
 
 
@@ -639,3 +668,7 @@ check_GM3 <- check_GM2 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
 check_GM3 %>%  count(Strip_Type)
 count(check_GM3)
 
+
+### This should be all the bits we need!!
+
+#Refer the the csv file or additional R script for plots and tables
