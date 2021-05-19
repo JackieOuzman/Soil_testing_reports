@@ -37,15 +37,15 @@ GS_rates_3a$rate_name <- as.character(GS_rates_3a$rate_name)
 unique(GS_rates_3a$rate_name)
 
 #check how many paddocks / zones I have for N and P
-check <- GS_rates_3a %>%  count(rate_name) #number of zone with analysis done that have GR
-check1 <- GS_rates_3a %>% 
-  filter(rate_name == "Grower_rate") %>% 
-  select(Zone_ID, input_file, paddock_code, Strip_Type, paddock_code)
-
-check2 <- check1 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
-check2 %>%  count(Strip_Type)
-count(check2) #this should be the same value as in the summary report for complete anlysis.
-# I am one out but I assume this is the excuded paddocks
+# check <- GS_rates_3a %>%  count(rate_name) #number of zone with analysis done that have GR
+# check1 <- GS_rates_3a %>% 
+#   filter(rate_name == "Grower_rate") %>% 
+#   select(Zone_ID, input_file, paddock_code, Strip_Type, paddock_code)
+# 
+# check2 <- check1 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
+# check2 %>%  count(Strip_Type)
+# count(check2) #this should be the same value as in the summary report for complete anlysis.
+# # I am one out but I assume this is the excuded paddocks
 
 
 ##########################################################################################################################################
@@ -111,18 +111,18 @@ GS_rates_3a_plus_rain_fert_content <- left_join(GS_rates_3a, rainfall_fert, by =
 
 ## lets check again how many zone and paddocks do I have? # I am happy have 85 paddock
 #check how many paddocks / zones I have for N and P
-names(GS_rates_3a_plus_rain_fert_content)
-check10 <- GS_rates_3a_plus_rain_fert_content %>%  count(rate_name) #number of zone with analysis done that have GR
-check10
-check11 <- GS_rates_3a_plus_rain_fert_content %>% 
-  filter(rate_name == "Grower_rate") %>% 
-  select(Zone_ID, input_file, paddock_code, Strip_Type.x, paddock_ID_Type)
-names(GS_rates_3a_plus_rain_fert_content)
-check12 <- check11 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
-
-check12 %>%  count(Strip_Type.x)
-count(check12) #this should be the same value as in the summary report for complete anlysis.
-# I am one out but I assume this is the excuded paddocks
+# names(GS_rates_3a_plus_rain_fert_content)
+# check10 <- GS_rates_3a_plus_rain_fert_content %>%  count(rate_name) #number of zone with analysis done that have GR
+# check10
+# check11 <- GS_rates_3a_plus_rain_fert_content %>% 
+#   filter(rate_name == "Grower_rate") %>% 
+#   select(Zone_ID, input_file, paddock_code, Strip_Type.x, paddock_ID_Type)
+# names(GS_rates_3a_plus_rain_fert_content)
+# check12 <- check11 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
+# 
+# check12 %>%  count(Strip_Type.x)
+# count(check12) #this should be the same value as in the summary report for complete anlysis.
+# # I am one out but I assume this is the excuded paddocks
 
 ##########################################################################################################################################
 #4. Bring in Sean DB
@@ -326,16 +326,16 @@ df <-  df %>%
 ## lets check again how many zone and paddocks do I have? # I am happy have 85 paddock
 #check how many paddocks / zones I have for N and P
 # names(df)
-check1000 <- df %>%  count(rate_name) #number of zone with analysis done that have GR
-check1000
-check1100 <- df %>%
-  filter(rate_name == "Grower_rate") %>%
-  select(Zone_ID, input_file, paddock_code, Strip_Type, paddock_ID_Type)
-names(df)
-check1200 <- check1100 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
-
-check1200 %>%  count(Strip_Type)
-count(check1200)
+# check1000 <- df %>%  count(rate_name) #number of zone with analysis done that have GR
+# check1000
+# check1100 <- df %>%
+#   filter(rate_name == "Grower_rate") %>%
+#   select(Zone_ID, input_file, paddock_code, Strip_Type, paddock_ID_Type)
+# names(df)
+# check1200 <- check1100 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
+# 
+# check1200 %>%  count(Strip_Type)
+# count(check1200)
 
 
 
@@ -378,6 +378,10 @@ GS_high_low_3d <- GS_high_low_3d %>%
          the_GSP_label,
          lower_than_GSP_label,
          join_zone_ID_Strip_Type)
+
+##This is duplicated so i need to remove it.
+GS_high_low_3d <- GS_high_low_3d %>% 
+  distinct(join_zone_ID_Strip_Type, .keep_all=TRUE)
 
 names(df)
 df <- df %>% 
@@ -520,8 +524,105 @@ df <- df %>%
     total_cost = cost_test + variable_costs + Cost_P_N_dollar_ha,
     GM  = grain_income - total_cost)
 
-## let output this and check it with some stuff....
-write.csv(df, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_other_withGM.csv")
+##############################################################################################
+## more clms to to get the GM values that relate to rates 'higher than GSP' 'the GPS'  etc
+# this is multiple step process first make a temp datafarme and create new clm summaries it and join it back
+names(df)
+
+temp_df <- df %>% 
+  dplyr::select(Zone_ID,
+                Rate,
+                Strip_Type,
+                Fld_Join_Approx1,
+                higher_than_GSP_label,
+                the_GSP_label,
+                lower_than_GSP_label,
+                GM,
+                yield)
+
+
+#1. GM for higher than GSP rate
+temp_df <- temp_df %>%
+  mutate(GM_higher_than_GSP_rate = case_when(
+    higher_than_GSP_label == Rate ~ GM
+  ))
+#2. GM for the GSP rate
+temp_df <- temp_df %>%
+  mutate(GM_GSP_rate = case_when(
+    the_GSP_label == Rate ~ GM
+  ))
+#3. GM for lower than GSP rate
+temp_df <- temp_df %>%
+  mutate(GM_lower_than_GSP_rate = case_when(
+    lower_than_GSP_label == Rate ~ GM
+  ))
+
+
+#4. Yld for higher than GSP rate
+temp_df <- temp_df %>%
+  mutate(YLD_higher_than_GSP_rate = case_when(
+    higher_than_GSP_label == Rate ~ yield
+  ))
+#5. Yld for the GSP rate
+temp_df <- temp_df %>%
+  mutate(YLD_GSP_rate = case_when(
+    the_GSP_label == Rate ~ yield
+  ))
+#6. Yld for lower than GSP rate
+temp_df <- temp_df %>%
+  mutate(YLD_lower_than_GSP_rate = case_when(
+    lower_than_GSP_label == Rate ~ yield
+  ))
+## condense this so I have one line for each zone
+names(temp_df)
+temp_df1 <- temp_df %>% 
+  group_by(Fld_Join_Approx1) %>% 
+  summarise(GM_higher_than_GSP_rate  = round(max(GM_higher_than_GSP_rate, na.rm = TRUE),0),
+            GM_GSP_rate              = round(max(GM_GSP_rate, na.rm = TRUE),0),
+            GM_lower_than_GSP_rate   = round(max(GM_lower_than_GSP_rate, na.rm = TRUE),0),
+            
+            YLD_higher_than_GSP_rate = round(max(YLD_higher_than_GSP_rate, na.rm = TRUE),4),
+            YLD_GSP_rate             = round(max(YLD_GSP_rate, na.rm = TRUE),4),
+            YLD_lower_than_GSP_rate  = round(max(YLD_lower_than_GSP_rate, na.rm = TRUE),4)
+            )
+
+names(temp_df1)
+temp_df1 <- temp_df1 %>% mutate(GM_higher_than_GSP_rate = na_if(GM_higher_than_GSP_rate, -Inf),
+                                GM_GSP_rate = na_if(GM_GSP_rate, -Inf),
+                                GM_lower_than_GSP_rate = na_if(GM_lower_than_GSP_rate, -Inf),
+                                 
+                                 YLD_higher_than_GSP_rate = na_if(YLD_higher_than_GSP_rate, -Inf),
+                                 YLD_GSP_rate = na_if(YLD_GSP_rate, -Inf),
+                                 YLD_lower_than_GSP_rate = na_if(YLD_lower_than_GSP_rate, -Inf))
+
+
+
+
+# names(df)
+# 
+# df_select <- df %>%
+#   select(
+#     Zone_ID,
+#     Rate,
+#     rate_name,
+#     GSP,
+#     Strip_Type,
+#     Details,
+#     Fld_Join_Approx1,
+#     higher_than_GSP_label,
+#     the_GSP_label,
+#     lower_than_GSP_label,
+#     GM
+#   )
+# names(df_select)
+# names(temp_df1)
+# remove redunant clm and replace inf
+df <- left_join(df, temp_df1, by= "Fld_Join_Approx1")
+
+
+
+# ## let output this and check it with some stuff....
+ write.csv(df, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_other_withGM.csv")
 
 
 ### should check GM
@@ -537,3 +638,4 @@ check_GM3 <- check_GM2 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
 
 check_GM3 %>%  count(Strip_Type)
 count(check_GM3)
+
