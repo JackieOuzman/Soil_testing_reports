@@ -649,6 +649,13 @@ temp_df1 <-
 df <- left_join(df, temp_df1, by= "Fld_Join_Approx1")
 
 
+df <- df %>% 
+  mutate(yld_diff_higher_rate = YLD_higher_than_GSP_rate-  YLD_GSP_rate,
+         yld_diff_lower_rate =  YLD_GSP_rate - YLD_lower_than_GSP_rate,
+         
+         GM_diff_higher_rate = GM_higher_than_GSP_rate-  GM_GSP_rate,
+         GM_diff_lower_rate = GM_GSP_rate - GM_lower_than_GSP_rate)
+
 
 # ## let output this and check it with some stuff....
  write.csv(df, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_other_withGM.csv")

@@ -127,6 +127,7 @@ ggplot(plot_df, aes(GM_diff_higher_rate))+
   geom_vline(xintercept = 0, linetype="dotted", 
              color = "red", size= 1.0)+
   scale_x_continuous(breaks = seq(-300, 600, by = 50))+
+  theme(axis.text.x=element_text(angle = 90, vjust = 0.5))+
   labs(
     title = "GM repsonse by applying more fert than the GSP ",
     y = "Count of zones",
