@@ -661,7 +661,44 @@ df <- df %>%
  write.csv(df, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_other_withGM.csv")
 
 
-### should check GM
+#########################################################################
+ ### This GM work should also go into the the 3d file
+ ##1. clear the workspace on non used objcets
+ ##2. make a temp df file with field to join zone ID strip type (might have one alreday)
+ ##3. select only a few clms join fld, GM diff high rate , GM diff lower rate, status, rainfall class
+ ##4. bring in the 3d file again
+ ##5. join and save
+ 
+ #1. 
+ rm(list=ls()[!ls() %in% 'df'])
+ #2. 
+ names(df)
+ df_temp <- df %>% 
+   dplyr::select(
+   Fld_Join_Approx1,
+   rainfall_class,
+   GM_diff_higher_rate,
+   GM_diff_lower_rate)
+ names(df_temp)
+ # I have duplicates but I only want one entry per zone and strip type
+ df_temp <- df_temp %>% 
+   distinct(Fld_Join_Approx1, .keep_all = TRUE)
+#3. bring in 
+ GS_high_low_3d <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/GSP_low_high_comparision_t_test_merged_3d.csv")
+ GS_high_low_3d <- GS_high_low_3d %>% 
+   mutate(Fld_Join_Approx1 = paste0(Zone_ID, Strip_Type))
+ 
+ #5. join
+ names(df_temp)
+ names(GS_high_low_3d)
+ 
+ GS_high_low_3d <- left_join(GS_high_low_3d, df_temp, by = "Fld_Join_Approx1")
+## write out to 
+ write.csv(GS_high_low_3d, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_high_low_withGM.csv")
+ 
+ 
+ 
+ ### should check GM
 
 
 check_GM1 <- df %>%  count(rate_name) #number of zone with analysis done that have GR
@@ -679,3 +716,4 @@ count(check_GM3)
 ### This should be all the bits we need!!
 
 #Refer the the csv file or additional R script for plots and tables
+
