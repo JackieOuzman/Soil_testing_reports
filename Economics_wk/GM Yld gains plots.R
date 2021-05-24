@@ -32,12 +32,12 @@ count(check_GM3)
 #1. calulate the difference between yld for higher rates vs yld for GSP (high rate - low rates)
 #YLD_GSP_rate
 #YLD_higher_than_GSP_rate
-df <- df %>% 
-  mutate(yld_diff_higher_rate = YLD_higher_than_GSP_rate-  YLD_GSP_rate,
-         yld_diff_lower_rate =  YLD_GSP_rate - YLD_lower_than_GSP_rate,
-         
-         GM_diff_higher_rate = GM_higher_than_GSP_rate-  GM_GSP_rate,
-         GM_diff_lower_rate = GM_GSP_rate - GM_lower_than_GSP_rate)
+# df <- df %>% 
+#   mutate(yld_diff_higher_rate = YLD_higher_than_GSP_rate-  YLD_GSP_rate,
+#          yld_diff_lower_rate =  YLD_GSP_rate - YLD_lower_than_GSP_rate,
+#          
+#          GM_diff_higher_rate = GM_higher_than_GSP_rate-  GM_GSP_rate,
+#          GM_diff_lower_rate = GM_GSP_rate - GM_lower_than_GSP_rate)
 # this has heaps of duplication I just want one value per zone (and strip type)
 
 plot_df <- df%>% 

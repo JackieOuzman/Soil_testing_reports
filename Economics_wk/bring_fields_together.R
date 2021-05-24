@@ -155,7 +155,7 @@ recom_rateDB <- recom_rateDB %>%
   )
 
 
-recom_rateDB <-recom_rateDB %>% 
+recom_rateDB <-recom_rateDB %>%
   dplyr::select(-n_rec_yld_low,
                 -n_rec_yld_med,
                 -n_rec_yld_high)
@@ -191,6 +191,25 @@ GS_rates_rain_fert_rec <- GS_rates_rain_fert_rec %>%
     Strip_Type == 	"N Strip" & maxN <= 0 ~ "respose unlikely",
     TRUE ~ "NA"
   ))
+# names(GS_rates_rain_fert_rec)
+# check <- GS_rates_rain_fert_rec %>%
+#   dplyr::select(
+#     Strip_Type,
+#     p_rec,
+#     maxN,
+#     soil_test_indicates, 
+#     SM_comment_Soil_N,
+#     SM_comment_Soil_P,
+#     SM_comment_Plant_Tissue,
+#     Zone_ID,
+#     n_rec_yld_low,
+#     n_rec_yld_med,
+#     n_rec_yld_high
+#   )
+# 
+# write.csv(check, "W:/value_soil_testing_prj/Economics/2020/check1.csv")
+
+
 
 # just keep the joined data.
 rm(list = ls()[!ls() %in% c("GS_rates_rain_fert_rec")])
@@ -678,7 +697,8 @@ df <- df %>%
    Fld_Join_Approx1,
    rainfall_class,
    GM_diff_higher_rate,
-   GM_diff_lower_rate)
+   GM_diff_lower_rate,
+   Status)
  names(df_temp)
  # I have duplicates but I only want one entry per zone and strip type
  df_temp <- df_temp %>% 
@@ -693,7 +713,25 @@ df <- df %>%
  names(GS_high_low_3d)
  
  GS_high_low_3d <- left_join(GS_high_low_3d, df_temp, by = "Fld_Join_Approx1")
-## write out to 
+
+ unique(GS_high_low_3d$yld_response)
+ 
+ GS_high_low_3d <- GS_high_low_3d %>% 
+   dplyr::mutate(
+     yld_response_sig = case_when(
+       Significant_practical == "significant" &     yld_response == "positive" ~       "positive_sig",
+       Significant_practical == "not significant" & yld_response == "positive" ~       "no_response_sig",
+       
+       Significant_practical == "significant" &     yld_response == "negative" ~        "negative_sig",
+       Significant_practical == "not significant" & yld_response == "negative" ~        "no_response_sig",
+       
+       Significant_practical == "significant" &     yld_response == "no_response" ~     "no_response_sig",
+       Significant_practical == "not significant" & yld_response == "no_response" ~     "no_response_sig",
+       
+       ))
+ 
+ 
+ ## write out to 
  write.csv(GS_high_low_3d, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_high_low_withGM.csv")
  
  
