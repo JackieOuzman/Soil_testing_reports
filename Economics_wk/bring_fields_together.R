@@ -72,6 +72,10 @@ rainfall_fert <- rainfall_fert %>%
     Status
   )
 
+## need to remove the traiiling white space at the end of Strip Rate.
+
+rainfall_fert$Strip_Rate <- stringi::stri_trim_right(rainfall_fert$Strip_Rate)
+
 str(GS_rates_3a$Zone_ID) #This is the zone code with 6 digits
 str(rainfall_fert$Paddock_ID) #this is the paddock code with 5 digits
 #because Harm changed the paddock codes part way through the projcet I need some extra chceked when joing paddock code to zone.
@@ -100,7 +104,9 @@ rainfall_fert <- rainfall_fert %>%
   rainfall_fert <- rainfall_fert %>% 
   dplyr::mutate(fld_for_join = paste0(Paddock_ID,"_", Strip_Rate, "_",Strip_Type))
 
-  str(GS_rates_3a) 
+   
+  
+str(GS_rates_3a) 
 str(rainfall_fert)
 ##########################################################################################################################################
 #3.  join togther 
