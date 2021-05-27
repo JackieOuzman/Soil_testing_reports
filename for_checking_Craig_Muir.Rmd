@@ -369,7 +369,7 @@ include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
 
 ### Results
 
-```{r display results site 3 page1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display results site 3 page1, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 # image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
@@ -380,14 +380,14 @@ include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
 
 ```
 
-```{r display results site 3 page2, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display results site 3 page2, echo=FALSE, message=FALSE, warning=FALSE}
 
 
-# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>% 
-#   image_rotate(90)
-
-image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
   image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+#   image_rotate(90)
 
 ```
 
@@ -415,18 +415,18 @@ include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 
 ```{r display results site 4 Page 1, echo=FALSE, message=FALSE, warning=FALSE}
 
-# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
-#   image_rotate(90)
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
+  image_rotate(90)
 
 
-# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site4, ".+Pg1"))) %>% 
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site4, ".+Pg1"))) %>%
 #   image_rotate(90)
 
 
 ```
 
 
-```{r display site 5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display site 5, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 # Site 5
@@ -434,7 +434,7 @@ include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 ### Harvest map
 
 
-include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
+#include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
 ```
 
 
@@ -443,7 +443,7 @@ include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
 
 ### Yield trace
 
-include_graphics(paste0(Growers_folder,site5,  yld_trace_site5))
+#include_graphics(paste0(Growers_folder,site5,  yld_trace_site5))
 ```
 
 
