@@ -116,8 +116,8 @@ paddock_done2020_display %>%
 Extra Notes:
 
 	
-Paddock 2 
-Something wrong with Zone ID - still needs fixing and will re run (soon)
+Paddock 7 
+Northen zone yield data has been trimmed.
 
 
 
@@ -380,14 +380,14 @@ include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
 
 ```
 
-```{r display results site 3 page2, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display results site 3 page2, echo=FALSE, message=FALSE, warning=FALSE}
 
 
-# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>% 
-#   image_rotate(90)
-
-image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
   image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+#   image_rotate(90)
 
 ```
 
@@ -543,8 +543,8 @@ image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site7)) %>%
 ```{r how many sites, message=FALSE, warning=FALSE, include=FALSE}
 
 
-numb_sites_paddock_ID <- c(Paddock_selected_site1, Paddock_selected_site2)#,
-                           #Paddock_selected_site3)#, Paddock_selected_site4)#,
+numb_sites_paddock_ID <- c(Paddock_selected_site1, Paddock_selected_site2,
+                           Paddock_selected_site3)#, Paddock_selected_site4)#,
                            # Paddock_selected_site5, Paddock_selected_site6,
                            # Paddock_selected_site7, Paddock_selected_site8)
 numb_sites_paddock_ID
@@ -654,7 +654,7 @@ GSPvsAltGSP_plot <- GSP_AltGSP_t_test %>%
        y = "Count of zones with a significant difference",
        x = "result of t - test (GSP vs. Alt GSP)")
 
-GSPvsAltGSP_plot
+#GSPvsAltGSP_plot
 
 
 
@@ -1186,7 +1186,7 @@ Rec_rate_comparison_plot
 ```
 
 
-```{r rec rate comp high low plot N, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r rec rate comp high low plot N, echo=FALSE, message=FALSE, warning=FALSE}
 
 Rec_rate_comparison_N <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e_N.csv")
 
@@ -1401,10 +1401,10 @@ Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
 Rec_rate_comparison_N <- left_join(Rec_rate_comparison_N, paddock_details_join, by= c("Zone_ID" = "Zone ID"))
 # #! we have a problem with "524102" in  check_fert_applied and  52410 in paddock_details (5 digits)
 # #So when Paddock ID 52410 I will enter the farmer and paddoock tested Farmer = Pole	, `Paddock tested` = Gums
- Rec_rate_comparison_N <- Rec_rate_comparison_N %>% 
-   mutate(`Paddock tested` = case_when(
-     paddock_ID == 524102 ~ "Gums",
-     TRUE ~ `Paddock tested`))
+ # Rec_rate_comparison_N <- Rec_rate_comparison_N %>% 
+ #   mutate(`Paddock tested` = case_when(
+ #     paddock_ID == 524102 ~ "Gums",
+ #     TRUE ~ `Paddock tested`))
 
 
 Rec_rate_comparison_table_lower_rates_N <- Rec_rate_comparison_N %>% 
