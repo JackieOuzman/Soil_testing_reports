@@ -329,6 +329,7 @@ include_graphics(paste0(Growers_folder,site1,  yld_trace_site1))
 
 include_graphics(paste0(Growers_folder,site2,  harvest_map_site2))
 ```
+
 ### Yield trace
 
 
@@ -372,6 +373,7 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site2
 include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
 
 ```
+
 ### Yield trace
 
 
@@ -397,11 +399,11 @@ include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
 ```{r display results site 3 page2, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 
-# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>% 
-#   image_rotate(90)
-
-image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
   image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+#   image_rotate(90)
 
 ```
 
@@ -429,8 +431,8 @@ include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 
 ```{r display results site 4 Page 1, echo=FALSE, message=FALSE, warning=FALSE}
 
-# image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
-#   image_rotate(90)
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
+  image_rotate(90)
 
 
 # image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site4, ".+Pg1"))) %>% 
@@ -450,6 +452,7 @@ include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 
 include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
 ```
+
 ### Yield trace
 
 
@@ -459,6 +462,7 @@ include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
 
 include_graphics(paste0(Growers_folder,site5,  yld_trace_site5))
 ```
+
 ### Results
 
 
@@ -541,6 +545,43 @@ include_graphics(paste0(Growers_folder,site7,  yld_trace_site7))
 
 
 image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site7)) %>%
+  image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site7, ".+Pg1"))) %>% 
+#   image_rotate(90)
+
+
+```
+
+
+# Site 8
+
+### Harvest map
+
+
+```{r display site 8, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site8,  harvest_map_site8))
+```
+
+
+### Yield trace
+
+
+```{r "display site 8 yld trace", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site8,  yld_trace_site8))
+```
+
+### Results
+
+```{r "display results site 8 page 1", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site8)) %>%
   image_rotate(90)
 
 # image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site7, ".+Pg1"))) %>% 
