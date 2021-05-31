@@ -180,7 +180,7 @@ site7 <- gsub(" ", "_", site7)
 # site1
 # site2
 # site3
-# site4
+site4 <- "Ottens/Paddock_17/output/"
 # site5
 
 site6 <- "Williams/pdk42/output/"
@@ -299,7 +299,9 @@ image_read(dir(png_folder, full.names=T, pattern=site_name_2)) %>%
 
 ```{r display site 3, echo=FALSE, message=FALSE, warning=FALSE}
 
-include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
+#include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
+
+include_graphics("W:/value_soil_testing_prj/Yield_data/2020/FSG/Hart/Ottens/Paddock_17/output/Paddock-17_Final_map.jpg")
 ```
 
 ### Yield trace
