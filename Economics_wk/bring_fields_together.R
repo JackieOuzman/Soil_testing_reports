@@ -14,38 +14,82 @@ GS_rates_3a <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_
 #make a field for joining in both df.
 str(GS_rates_3a)
 GS_rates_3a$Strip_Type <- sub("^[^_]*_", "", GS_rates_3a$paddock_ID_Type)
+#new clms with zone ID and strip type
+GS_rates_3a <- GS_rates_3a %>% 
+  mutate(Zone_ID_type = paste0(Zone_ID, "_", Strip_Type))
+ 
+check_GS_rates_3a <- GS_rates_3a %>% 
+  dplyr::distinct(Zone_ID_type,  .keep_all = TRUE)
+names(check_GS_rates_3a)
+check_GS_rates_3a <- check_GS_rates_3a %>% 
+  dplyr::select(Zone_ID_type, Zone_ID, Strip_Type)
+
+count(check_GS_rates_3a) #198#this includes stuff that wont get anlaysed
+
+
+## have I got the same number of zones as Christina - whats on the list??
+
+spatial_data_no_yld_zones <- st_read("W:/value_soil_testing_prj/Yield_data/2020/All_Zones_2020_wgs84.shp")
+spatial_data_no_yld_zones_df <- data.frame(spatial_data_no_yld_zones)
+spatial_data_no_yld_zones_df_1 <- spatial_data_no_yld_zones_df %>% dplyr::select(-geometry)
+
+##looks like the zone are duplicated if they have alt GSP not everything??
+spatial_data_no_yld_zones_df_1 <- spatial_data_no_yld_zones_df_1 %>% 
+  mutate(Zone_ID_Strip_type = paste0(Zone_ID,"_", Strip_Type))
+zone <- dplyr::distinct(spatial_data_no_yld_zones_df_1, Zone_ID_Strip_type,  .keep_all = TRUE)
+rm(spatial_data_no_yld_zones, spatial_data_no_yld_zones_df, spatial_data_no_yld_zones_df_1)
+
+
+#only keep zones for economic analysis 
+count(zone)
+unique(zone$Status)
+check_zone <- zone %>% 
+  filter(Status == "5. Report Complete")
+
+names(check_zone)
+check_zone <- check_zone %>% 
+  select("Zone_ID", "Strip_Type",
+"organisati","contact" ,"farmer", "paddock",  "Status")  
+count(check_zone)
+## join the two togther and see what didnt join
+
+str(check_zone)
+str(check_GS_rates_3a)
+
+join_check <- full_join(check_zone, check_GS_rates_3a)
+join_check <-join_check %>% drop_na(contact)
+
+list_of_zone_include <- join_check$Zone_ID
+#now use this list to filter out my analysis...
+GS_rates_3a_just_analysis <- GS_rates_3a %>% 
+  filter(Zone_ID %in% list_of_zone_include)
+
+count(GS_rates_3a_just_analysis)
+names(GS_rates_3a_just_analysis)
+GS_rates_3a_just_analysis <- GS_rates_3a_just_analysis %>% 
+  filter(rate_name == "Grower_rate")
+
+count(GS_rates_3a_just_analysis)
+
 
 
 # I cant use a paddock code 5 digits for everything because zone code are now a mix of 6 and 7 digits
 #What paddocks have 7 digit codes?
 
-GS_rates_3a$length_zoneID <- nchar(GS_rates_3a$Zone_ID)
+GS_rates_3a_just_analysis$length_zoneID <- nchar(GS_rates_3a_just_analysis$Zone_ID)
 #remove last value in string
-GS_rates_3a <- GS_rates_3a %>% 
+GS_rates_3a_just_analysis <- GS_rates_3a_just_analysis %>% 
   mutate(paddock_code =   
            case_when(length_zoneID == 6 ~ substr(Zone_ID, start = 1, stop = 5),
                      length_zoneID == 7 ~ substr(Zone_ID, start = 1, stop = 6)))
 
 
-GS_rates_3a <- GS_rates_3a %>% 
+GS_rates_3a_just_analysis <- GS_rates_3a_just_analysis %>% 
   dplyr::mutate(fld_for_join = paste0(paddock_code,"_", Details,"_",Strip_Type))
 
 
-## check how many paddocks we have for this?
-names(GS_rates_3a)
-GS_rates_3a$rate_name <- as.character(GS_rates_3a$rate_name)
-unique(GS_rates_3a$rate_name)
 
-#check how many paddocks / zones I have for N and P
-# check <- GS_rates_3a %>%  count(rate_name) #number of zone with analysis done that have GR
-# check1 <- GS_rates_3a %>% 
-#   filter(rate_name == "Grower_rate") %>% 
-#   select(Zone_ID, input_file, paddock_code, Strip_Type, paddock_code)
-# 
-# check2 <- check1 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
-# check2 %>%  count(Strip_Type)
-# count(check2) #this should be the same value as in the summary report for complete anlysis.
-# # I am one out but I assume this is the excuded paddocks
+
 
 
 ##########################################################################################################################################
@@ -76,11 +120,36 @@ rainfall_fert <- rainfall_fert %>%
 
 rainfall_fert$Strip_Rate <- stringi::stri_trim_right(rainfall_fert$Strip_Rate)
 
-str(GS_rates_3a$Zone_ID) #This is the zone code with 6 digits
+str(GS_rates_3a_just_analysis$Zone_ID) #This is the zone code with 6 digits
+str(GS_rates_3a_just_analysis$paddock_code)
 str(rainfall_fert$Paddock_ID) #this is the paddock code with 5 digits
 #because Harm changed the paddock codes part way through the projcet I need some extra chceked when joing paddock code to zone.
 #are details and strip rate the same??
 
+#I have a list of zones to be included #  filter(Zone_ID %in% list_of_zone_include)
+# change this to a list of paddocks some paddocks have 6 digits some have 7
+#create a new list list_of_zone_include
+list_of_zone_include_df <- data.frame(list_of_zone_include)
+names(list_of_zone_include_df)
+list_of_zone_include_df <- rename(list_of_zone_include_df, zone_incl = list_of_zone_include)
+
+str(list_of_zone_include_df)
+list_of_zone_include_df$zone_incl <- as.character(list_of_zone_include_df$zone_incl)
+
+list_of_zone_include_df$length_zoneID <- nchar(list_of_zone_include_df$zone_incl)
+
+list_of_zone_paddocks_include_df <- list_of_zone_include_df %>%
+  mutate(
+    paddock_incl = case_when(
+      length_zoneID == 6 ~ substr(zone_incl, start = 1, stop = 5),
+      length_zoneID == 7 ~ substr(zone_incl, start = 1, stop = 6)
+           ))
+list_of_paddock_include <- list_of_zone_paddocks_include_df$paddock_incl
+
+names(rainfall_fert)
+
+test <- rainfall_fert %>% 
+  filter(Paddock_ID %in% list_of_paddock_include)
 
 ### need to remove the Alt GPS from the rainfall data                
 #names(rainfall_fert)
@@ -91,7 +160,7 @@ unique(rainfall_fert$GSP)
 unique(rainfall_fert$Status)
 rainfall_fert %>%  count(GSP) 
 
-#remove from analysis in status clm
+#remove from analysis in status clm this is paddocks
 rainfall_fert <- rainfall_fert %>%  
 filter(Status != "Excluded from Analysis")
 rainfall_fert %>%  count(GSP) 
@@ -113,7 +182,9 @@ str(rainfall_fert)
 ##########################################################################################################################################
 
 #not sure what is happening here the joined df is larger than 3a - but it should be the same??
-GS_rates_3a_plus_rain_fert_content <- left_join(GS_rates_3a, rainfall_fert, by = "fld_for_join")
+GS_rates_3a_plus_rain_fert_content <- left_join(GS_rates_3a_just_analysis, rainfall_fert, by = "fld_for_join")
+
+count(GS_rates_3a_plus_rain_fert_content)
 
 ## lets check again how many zone and paddocks do I have? # I am happy have 85 paddock
 #check how many paddocks / zones I have for N and P
