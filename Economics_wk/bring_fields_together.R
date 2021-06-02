@@ -5,29 +5,13 @@ library(readxl)
 library(readr)
 library(DT)
 library(dplyr)
+
 ##########################################################################################################################################
-## step 1 bring in the t.test data 
-#1. simple comparision of GSP vs other rates
+## step 1 make a list of zone and a list of paddocks that will be included in the analysis 
+#1a. zones
 ##########################################################################################################################################
 
-GS_rates_3a <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/t_test_merged_3a.csv")
-#make a field for joining in both df.
-str(GS_rates_3a)
-GS_rates_3a$Strip_Type <- sub("^[^_]*_", "", GS_rates_3a$paddock_ID_Type)
-#new clms with zone ID and strip type
-GS_rates_3a <- GS_rates_3a %>% 
-  mutate(Zone_ID_type = paste0(Zone_ID, "_", Strip_Type))
- 
-check_GS_rates_3a <- GS_rates_3a %>% 
-  dplyr::distinct(Zone_ID_type,  .keep_all = TRUE)
-names(check_GS_rates_3a)
-check_GS_rates_3a <- check_GS_rates_3a %>% 
-  dplyr::select(Zone_ID_type, Zone_ID, Strip_Type)
-
-count(check_GS_rates_3a) #198#this includes stuff that wont get anlaysed
-
-
-## have I got the same number of zones as Christina - whats on the list??
+## have I got the same number of zones as Christina - has a shapefile informed by spatial data and done spreadsheet.
 
 spatial_data_no_yld_zones <- st_read("W:/value_soil_testing_prj/Yield_data/2020/All_Zones_2020_wgs84.shp")
 spatial_data_no_yld_zones_df <- data.frame(spatial_data_no_yld_zones)
@@ -46,32 +30,88 @@ unique(zone$Status)
 check_zone <- zone %>% 
   filter(Status == "5. Report Complete")
 
-names(check_zone)
 check_zone <- check_zone %>% 
   select("Zone_ID", "Strip_Type",
-"organisati","contact" ,"farmer", "paddock",  "Status")  
+         "organisati","contact" ,"farmer", "paddock",  "Status")  
 count(check_zone)
-## join the two togther and see what didnt join
+list_of_zone_include <- check_zone$Zone_ID #172 zones
+#1a.summary info from this step
+count(zone) #all the zones with some spatial data
+zone %>%  group_by(Status) %>% 
+  summarise(count = n())
 
-str(check_zone)
-str(check_GS_rates_3a)
+count(check_zone) #the zones included in the economic analysis
+names(check_zone)
+check_zone %>%  group_by(Strip_Type) %>% 
+  summarise(count = n())
 
-join_check <- full_join(check_zone, check_GS_rates_3a)
-join_check <-join_check %>% drop_na(contact)
+##########################################################################################################################################
+## step 1 make a list of zone and a list of paddocks that will be included in the analysis 
+#1b. paddock codes
+##########################################################################################################################################
+#create a new list list_of_zone_include
+list_of_zone_include_df <- data.frame(list_of_zone_include)
+names(list_of_zone_include_df)
+list_of_zone_include_df <- rename(list_of_zone_include_df, zone_incl = list_of_zone_include)
 
-list_of_zone_include <- join_check$Zone_ID
+str(list_of_zone_include_df)
+list_of_zone_include_df$zone_incl <- as.character(list_of_zone_include_df$zone_incl)
+
+list_of_zone_include_df$length_zoneID <- nchar(list_of_zone_include_df$zone_incl)
+
+list_of_zone_paddocks_include_df <- list_of_zone_include_df %>%
+  mutate(
+    paddock_incl = case_when(
+      length_zoneID == 6 ~ substr(zone_incl, start = 1, stop = 5),
+      length_zoneID == 7 ~ substr(zone_incl, start = 1, stop = 6)
+    ))
+## remove the duplicates
+list_of_zone_paddocks_include_df <- distinct(list_of_zone_paddocks_include_df, paddock_incl)
+
+list_of_paddock_include <- list_of_zone_paddocks_include_df$paddock_incl
+
+#list_of_paddock_include_df <- data.frame(list_of_paddock_include)
+
+
+
+rm(list_of_zone_include_df, list_of_zone_paddocks_include_df)
+
+###################################################################################################################################
+# summary of 1a and 1b I have 2 list of zones to include and padocks to include in analysis
+
+
+##########################################################################################################################################
+## step 1 bring in the t.test data 
+#1. simple comparision of GSP vs other rates
+##########################################################################################################################################
+
+
+
+GS_rates_3a <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/t_test_merged_3a.csv")
+#make a field for joining in both df.
+str(GS_rates_3a)
+GS_rates_3a$Strip_Type <- sub("^[^_]*_", "", GS_rates_3a$paddock_ID_Type)
+## lets keep only the zones that we want ecomoic analsysis to run on...
+
 #now use this list to filter out my analysis...
 GS_rates_3a_just_analysis <- GS_rates_3a %>% 
   filter(Zone_ID %in% list_of_zone_include)
+rm(GS_rates_3a)
+## I should check that this is correct.
+#keep all the zones ID and strip type that are unique
 
-count(GS_rates_3a_just_analysis)
-names(GS_rates_3a_just_analysis)
+#new clms with zone ID and strip type
 GS_rates_3a_just_analysis <- GS_rates_3a_just_analysis %>% 
-  filter(rate_name == "Grower_rate")
+  mutate(Zone_ID_type = paste0(Zone_ID, "_", Strip_Type))
 
-count(GS_rates_3a_just_analysis)
+check_3a <- GS_rates_3a_just_analysis %>% 
+  dplyr::distinct(Zone_ID_type,  .keep_all = TRUE) %>% 
+  select(Zone_ID, Strip_Type, input_file)
+names(check_3a)
+count(check_3a) # I am expecting 172 but this this the sites with N and P strips 5110221 appears twice.
 
-
+ 
+######################################################################################################################
 
 # I cant use a paddock code 5 digits for everything because zone code are now a mix of 6 and 7 digits
 #What paddocks have 7 digit codes?
@@ -120,87 +160,88 @@ rainfall_fert <- rainfall_fert %>%
 
 rainfall_fert$Strip_Rate <- stringi::stri_trim_right(rainfall_fert$Strip_Rate)
 
-str(GS_rates_3a_just_analysis$Zone_ID) #This is the zone code with 6 digits
-str(GS_rates_3a_just_analysis$paddock_code)
-str(rainfall_fert$Paddock_ID) #this is the paddock code with 5 digits
-#because Harm changed the paddock codes part way through the projcet I need some extra chceked when joing paddock code to zone.
-#are details and strip rate the same??
+##### filter out the data so I just have what I will use for the economic analysis
 
-#I have a list of zones to be included #  filter(Zone_ID %in% list_of_zone_include)
-# change this to a list of paddocks some paddocks have 6 digits some have 7
-#create a new list list_of_zone_include
-list_of_zone_include_df <- data.frame(list_of_zone_include)
-names(list_of_zone_include_df)
-list_of_zone_include_df <- rename(list_of_zone_include_df, zone_incl = list_of_zone_include)
 
-str(list_of_zone_include_df)
-list_of_zone_include_df$zone_incl <- as.character(list_of_zone_include_df$zone_incl)
-
-list_of_zone_include_df$length_zoneID <- nchar(list_of_zone_include_df$zone_incl)
-
-list_of_zone_paddocks_include_df <- list_of_zone_include_df %>%
-  mutate(
-    paddock_incl = case_when(
-      length_zoneID == 6 ~ substr(zone_incl, start = 1, stop = 5),
-      length_zoneID == 7 ~ substr(zone_incl, start = 1, stop = 6)
-           ))
-list_of_paddock_include <- list_of_zone_paddocks_include_df$paddock_incl
-
-names(rainfall_fert)
-
-test <- rainfall_fert %>% 
+rainfall_fert <- rainfall_fert %>% 
   filter(Paddock_ID %in% list_of_paddock_include)
 
+
 ### need to remove the Alt GPS from the rainfall data                
-#names(rainfall_fert)
-#unique(rainfall_fert$GSP)
-#str(rainfall_fert$GSP)
-rainfall_fert$GSP <- as.character(rainfall_fert$GSP)
-unique(rainfall_fert$GSP)
-unique(rainfall_fert$Status)
-rainfall_fert %>%  count(GSP) 
-
-#remove from analysis in status clm this is paddocks
-rainfall_fert <- rainfall_fert %>%  
-filter(Status != "Excluded from Analysis")
-rainfall_fert %>%  count(GSP) 
-
 rainfall_fert <- rainfall_fert %>%   
   filter(is.na(GSP) | GSP == "GSP")
 
 
 
-  rainfall_fert <- rainfall_fert %>% 
+rainfall_fert <- rainfall_fert %>% 
   dplyr::mutate(fld_for_join = paste0(Paddock_ID,"_", Strip_Rate, "_",Strip_Type))
 
-   
-  
-str(GS_rates_3a) 
+## Pepper tree has a problem strip that needs removing 
+rainfall_fert <- rainfall_fert %>% filter(!(Paddock_ID == 31133 & Rate == 70 & is.na(GSP)))
+
+ 
+str(GS_rates_3a_just_analysis) 
 str(rainfall_fert)
 ##########################################################################################################################################
 #3.  join togther 
 ##########################################################################################################################################
 
-#not sure what is happening here the joined df is larger than 3a - but it should be the same??
-GS_rates_3a_plus_rain_fert_content <- left_join(GS_rates_3a_just_analysis, rainfall_fert, by = "fld_for_join")
 
-count(GS_rates_3a_plus_rain_fert_content)
+rain_fert_cont_3a <- left_join(GS_rates_3a_just_analysis, rainfall_fert, by = "fld_for_join")
+# some seem to have come through twice ?? remove the 
 
-## lets check again how many zone and paddocks do I have? # I am happy have 85 paddock
-#check how many paddocks / zones I have for N and P
-# names(GS_rates_3a_plus_rain_fert_content)
-# check10 <- GS_rates_3a_plus_rain_fert_content %>%  count(rate_name) #number of zone with analysis done that have GR
-# check10
-# check11 <- GS_rates_3a_plus_rain_fert_content %>% 
-#   filter(rate_name == "Grower_rate") %>% 
-#   select(Zone_ID, input_file, paddock_code, Strip_Type.x, paddock_ID_Type)
-# names(GS_rates_3a_plus_rain_fert_content)
-# check12 <- check11 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
-# 
-# check12 %>%  count(Strip_Type.x)
-# count(check12) #this should be the same value as in the summary report for complete anlysis.
-# # I am one out but I assume this is the excuded paddocks
+rain_fert_cont_3a <- rain_fert_cont_3a %>% 
+  filter(Status == "5. Report Complete" )
 
+#This now gives me the same number of zone / analysis as the GS_rate_3a_just_analysis df - happy!!
+
+names(rain_fert_cont_3a)
+
+#tidy up the df.
+rain_fert_cont_3a <- rain_fert_cont_3a %>%
+  select(
+    "Rate" = "Rate.x",
+    "yield",
+    "n"  ,
+    "sd" ,
+    "se" ,
+    "PtCount_tally" ,
+    "zone"  ,
+    "rate_name_order",
+    "rate_name" ,
+    "P_value" ,
+    "Mean_diff",
+    "rounded"  ,
+    "Significant",
+    "Details" ,
+    "Start_Fert",
+    "Top_Dress"   ,
+    "Zone"  ,
+    "Zone_ID" ,
+    "paddock_ID_Type"  ,
+    "input_file"  ,
+    "ID_analysis_zone_temp" ,
+    "Significant_practical",
+    "Strip_Type" = "Strip_Type.y" ,
+    "Zone_ID_type" ,
+    "length_zoneID",
+    "paddock_code" ,
+    "fld_for_join" ,
+    "Paddock_ID"  ,
+    "GSP" ,
+    "Strip_Rate" ,
+    "organisati" ,
+    "contact"  ,
+    "farmer"  ,
+    "paddock" ,
+    "av_rain"  ,
+    "Total_sum_N_content" ,
+    "Total_sum_P_content" ,
+    "Status"
+  )
+
+
+rm(check_3a,check_zone, GS_rates_3a_just_analysis, list_of_paddock_include_df, rainfall_fert)
 ##########################################################################################################################################
 #4. Bring in Sean DB
 ##########################################################################################################################################
@@ -232,30 +273,197 @@ recom_rateDB <- recom_rateDB %>%
   )
 
 
-recom_rateDB <-recom_rateDB %>%
-  dplyr::select(-n_rec_yld_low,
-                -n_rec_yld_med,
-                -n_rec_yld_high)
+# recom_rateDB <-recom_rateDB %>%
+#   dplyr::select(-n_rec_yld_low,
+#                 -n_rec_yld_med,
+#                 -n_rec_yld_high)
+
+
+
+#just keep the data for the economic analysis
+#now use this list to filter out my analysis...
+recom_rateDB <- recom_rateDB %>% 
+  filter(Zone_ID %in% list_of_zone_include)
+
+recom_rateDB <- recom_rateDB %>%
+  dplyr::select(
+    "Zone_ID" ,
+    "p_rec" ,
+    "maxN" ,
+    "n_rec_yld_low",
+    "n_rec_yld_med" ,
+    "n_rec_yld_high",
+    "SM_comment_Soil_N",
+    "SM_comment_Soil_P",
+    "SM_comment_Plant_Tissue"
+  )     
+
+
+
+## add the rainfall data to this df.
+names(rain_fert_cont_3a)
+rainfall_only <- rain_fert_cont_3a %>% 
+  select(Zone_ID, av_rain) %>% 
+  distinct(Zone_ID, .keep_all = TRUE)
+
+rainfall_only <- rainfall_only %>% 
+  dplyr::mutate(
+    rainfall_class = case_when(
+      av_rain<=350 ~ "low",
+      av_rain >500 ~ "high",
+      TRUE ~ "medium"))
+
+## add rainfall to Sean DB with recom rates 
+
+recom_rateDB$Zone_ID <- as.double(recom_rateDB$Zone_ID)
+recom_rateDB <- left_join(recom_rateDB,rainfall_only)
+
+## add in the strip_type.
+names(rain_fert_cont_3a)
+strip_type_per_zone <- rain_fert_cont_3a %>% 
+  select(Zone_ID, Zone_ID_type, Strip_Type) %>% 
+  distinct(Zone_ID_type, .keep_all = TRUE)
+
+N_strip_type_per_zone <- strip_type_per_zone %>% 
+  filter(Strip_Type == "N Strip")
+P_strip_type_per_zone <- strip_type_per_zone %>% 
+  filter(Strip_Type == "P Strip")
+
+
+recom_rateDB_N <- left_join(N_strip_type_per_zone, recom_rateDB)
+recom_rateDB_P <- left_join(P_strip_type_per_zone, recom_rateDB)
+##Plot this a requested
+str(recom_rateDB_P)
+recom_rateDB_P$rainfall_class_f <- as.factor(recom_rateDB_P$rainfall_class)
+recom_rateDB_N$rainfall_class_f <- as.factor(recom_rateDB_N$rainfall_class)
+
+ggplot(recom_rateDB_P, aes(x=p_rec)) +
+  geom_histogram(aes(y = stat(count) / sum(count))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #facet_wrap(.~ rainfall_class_f)+
+theme_bw() +
+  geom_vline(
+    xintercept = 5,
+    linetype = "dotted",
+    color = "red",
+    size = 1.0
+  ) +
+  #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
+  labs(
+    title = "P recommended rates from soil testing",
+    y = "Frequency of zones",
+    x = "result from soil test",
+    subtitle = "only including zones used in economic analysis (n =103)"
+  )
+
+
+ggplot(recom_rateDB_N, aes(x=maxN)) +
+  geom_histogram(aes(y = stat(count) / sum(count))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #facet_wrap(.~ rainfall_class_f)+
+  theme_bw() +
+  geom_vline(
+    xintercept = 0,
+    linetype = "dotted",
+    color = "red",
+    size = 1.0
+  ) +
+  #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
+  labs(
+    title = "N recommended  rates from soil testing",
+    y = "Frequency of zones",
+    x = "result from soil test",
+    subtitle = "only including zones used in economic analysis (n =70)"
+  )
+
+recom_rateDB_N <- recom_rateDB_N %>% 
+  dplyr::mutate(soil_test_indicates = case_when(
+    # Strip_Type == 	"P Strip" & p_rec > 5 ~ "respose likely",
+    # Strip_Type == 	"P Strip" & p_rec <= 5 ~ "respose unlikely",
+    Strip_Type == 	"N Strip" & maxN > 0 ~ "respose likely",
+    Strip_Type == 	"N Strip" & maxN <= 0 ~ "respose unlikely",
+    TRUE ~ "no_rec"
+  ))
+
+recom_rateDB_P <- recom_rateDB_P %>% 
+  dplyr::mutate(soil_test_indicates = case_when(
+    Strip_Type == 	"P Strip" & p_rec > 5 ~ "respose likely",
+    Strip_Type == 	"P Strip" & p_rec <= 5 ~ "respose unlikely",
+    # Strip_Type == 	"N Strip" & maxN > 0 ~ "respose likely",
+    # Strip_Type == 	"N Strip" & maxN <= 0 ~ "respose unlikely",
+    TRUE ~ "no_rec"
+  ))
+#unique(recom_rateDB_P$soil_test_indicates)
+recom_rateDB_P %>% 
+  filter(soil_test_indicates!= "no_rec" ) %>% 
+ggplot( aes(x=soil_test_indicates)) +
+  geom_bar(aes(y = stat(count) / sum(count)))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #facet_wrap(.~ rainfall_class_f)+
+  theme_bw() +
+  # geom_vline(
+  #   xintercept = 5,
+  #   linetype = "dotted",
+  #   color = "red",
+  #   size = 1.0
+  # ) +
+  #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
+  labs(
+    title = "P recommedations from soil testing - respose unlikely defined as p rec <= 5",
+    y = "Frequency of zones",
+    x = "indicated from soil test",
+    subtitle = "only including zones used in economic analysis (n =103)"
+  )
+
+recom_rateDB_N %>% 
+  filter(soil_test_indicates!= "no_rec" ) %>% 
+  ggplot( aes(x=soil_test_indicates)) +
+  geom_bar(aes(y = stat(count) / sum(count)))+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #facet_wrap(.~ rainfall_class_f)+
+  theme_bw() +
+  # geom_vline(
+  #   xintercept = 5,
+  #   linetype = "dotted",
+  #   color = "red",
+  #   size = 1.0
+  # ) +
+  #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
+  labs(
+    title = "N recommedations from soil testing - respose unlikely defined as N rec <= 0",
+    y = "Frequency of zones",
+    x = "indicated from soil test",
+    subtitle = "only including zones used in economic analysis (n =70)"
+  )
+
+recom_rateDB_N %>% 
+  group_by(soil_test_indicates) %>% 
+  summarise(count = n())
+count(recom_rateDB_N)
+recom_rateDB_P %>% 
+  group_by(soil_test_indicates) %>% 
+  summarise(count = n())
+count(recom_rateDB_P)
 
 
 
 ##########################################################################################################################################
 #4. join Sean stuff to GS_rates_3a_plus...
 ##########################################################################################################################################
-str(GS_rates_3a_plus_rain_fert_content$Zone_ID) # use Zone_ID 
+str(rain_fert_cont_3a$Zone_ID) # use Zone_ID 
 str(recom_rateDB$Zone_ID) # use Zone_ID 
 recom_rateDB$Zone_ID <- as.double(recom_rateDB$Zone_ID)
 
-GS_rates_rain_fert_rec <- left_join(GS_rates_3a_plus_rain_fert_content, recom_rateDB)
+GS_rates_rain_fert_rec <- left_join(rain_fert_cont_3a, recom_rateDB)
 str(GS_rates_rain_fert_rec)
-
- GS_rates_rain_fert_rec <- dplyr::select(GS_rates_rain_fert_rec,
--Rate.y, - X.1 , -X, - Strip_Type.y)
+# 
+#  GS_rates_rain_fert_rec <- dplyr::select(GS_rates_rain_fert_rec,
+# -Rate.y, - X.1 , -X, - Strip_Type.y)
                                           
 
-GS_rates_rain_fert_rec <- dplyr::rename(GS_rates_rain_fert_rec,
-                                          Rate = Rate.x,
-                                          Strip_Type = Strip_Type.x)
+# GS_rates_rain_fert_rec <- dplyr::rename(GS_rates_rain_fert_rec,
+#                                           Rate = Rate.x,
+#                                           Strip_Type = Strip_Type.x)
 
 
 ## make new clm recommdation from soil test
@@ -268,28 +476,11 @@ GS_rates_rain_fert_rec <- GS_rates_rain_fert_rec %>%
     Strip_Type == 	"N Strip" & maxN <= 0 ~ "respose unlikely",
     TRUE ~ "NA"
   ))
-# names(GS_rates_rain_fert_rec)
-# check <- GS_rates_rain_fert_rec %>%
-#   dplyr::select(
-#     Strip_Type,
-#     p_rec,
-#     maxN,
-#     soil_test_indicates, 
-#     SM_comment_Soil_N,
-#     SM_comment_Soil_P,
-#     SM_comment_Plant_Tissue,
-#     Zone_ID,
-#     n_rec_yld_low,
-#     n_rec_yld_med,
-#     n_rec_yld_high
-#   )
-# 
-# write.csv(check, "W:/value_soil_testing_prj/Economics/2020/check1.csv")
 
 
 
 # just keep the joined data.
-rm(list = ls()[!ls() %in% c("GS_rates_rain_fert_rec")])
+#rm(list = ls()[!ls() %in% c("GS_rates_rain_fert_rec")])
 ##########################################################################################################################################
 #5. join approx recom rate labels - this will be diffiucult
 ##########################################################################################################################################
@@ -318,6 +509,14 @@ rec_rate_approx_N <- rec_rate_approx_N %>%
 # append the rec rates into one df
 rec_rate_approx_N_P <- rbind(rec_rate_approx_P, rec_rate_approx_N)
 
+#only keep the zones that will be in the economic analysis
+rec_rate_approx_N_P <- rec_rate_approx_N_P %>% 
+  filter(Zone_ID %in% list_of_zone_include)
+rec_rate_approx_N_P <- rec_rate_approx_N_P %>% 
+  mutate(temp_filter = paste0(Zone_ID, Strip_Type, rec_rate_appox)) %>% 
+  distinct(temp_filter, .keep_all = TRUE) %>% 
+  select(-temp_filter)
+
 rm(rec_rate_approx_N, rec_rate_approx_P)
 
 ###########################################################################################################
@@ -340,21 +539,7 @@ rec_rate_approx_N_P <- rec_rate_approx_N_P %>%  dplyr::select(-rec_rate)
 df <- left_join(GS_rates_rain_fert_rec, rec_rate_approx_N_P, by = "Fld_Join_Approx1")
 
 
-# CHECK THAT  we have join correctly
-## lets check again how many zone and paddocks do I have? # I am happy have 85 paddock
-#check how many paddocks / zones I have for N and P
-# names(df$Zone_ID.x)
-# check100 <- df %>%  count(rate_name) #number of zone with analysis done that have GR
-# check100
-# check110 <- df %>% 
-#   filter(rate_name == "Grower_rate") %>% 
-#   select(Zone_ID.x, input_file, paddock_code, Strip_Type.x, paddock_ID_Type)
-# names(df)
-# check120 <- check110 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
-# 
-# check120 %>%  count(Strip_Type.x)
-# count(check120) #this should be the same value as in the summary report for complete anlysis.
-# I am one out but I assume this is the excuded paddocks
+
 names(df)
 
 df <- df %>% 
@@ -417,21 +602,7 @@ df <-  df %>%
       rec_rate_appox == Details ~ N_P_content
     ))
 
-### last check on merged data frame.
-# CHECK THAT  we have join correctly
-## lets check again how many zone and paddocks do I have? # I am happy have 85 paddock
-#check how many paddocks / zones I have for N and P
-# names(df)
-# check1000 <- df %>%  count(rate_name) #number of zone with analysis done that have GR
-# check1000
-# check1100 <- df %>%
-#   filter(rate_name == "Grower_rate") %>%
-#   select(Zone_ID, input_file, paddock_code, Strip_Type, paddock_ID_Type)
-# names(df)
-# check1200 <- check1100 %>%  distinct(paddock_ID_Type, .keep_all = TRUE)
-# 
-# check1200 %>%  count(Strip_Type)
-# count(check1200)
+
 
 
 
@@ -460,6 +631,7 @@ df <- df %>% mutate(soil_test_says_N = case_when(
 GS_high_low_3d <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/GSP_low_high_comparision_t_test_merged_3d.csv")
 #make a field for joining in both df.
 str(GS_high_low_3d)
+
 #select a few clms.
 GS_high_low_3d <- GS_high_low_3d %>% 
   select(Zone_ID,
@@ -470,10 +642,16 @@ GS_high_low_3d <- GS_high_low_3d %>%
 GS_high_low_3d <- GS_high_low_3d %>% 
   mutate(join_zone_ID_Strip_Type = paste0(Zone_ID, "_", Strip_Type))
 GS_high_low_3d <- GS_high_low_3d %>% 
-  select(higher_than_GSP_label,
+  select(Zone_ID,
+    higher_than_GSP_label,
          the_GSP_label,
          lower_than_GSP_label,
-         join_zone_ID_Strip_Type)
+         join_zone_ID_Strip_Type, Strip_Type)
+
+## only keep the zones that will be included in the economic analysis
+GS_high_low_3d <- GS_high_low_3d %>% 
+  filter(Zone_ID %in% list_of_zone_include)
+
 
 ##This is duplicated so i need to remove it.
 GS_high_low_3d <- GS_high_low_3d %>% 
@@ -488,35 +666,7 @@ df <- left_join(df, GS_high_low_3d, by= "join_zone_ID_Strip_Type")
 names(df)
 
 ###############################################################
-## check join - it looks good
-# df <- df %>%
-#   select(
-#     "Zone_ID.x",
-#     "Rate",
-#     "rate_name",
-#     "Strip_Type.x" ,
-#     "Zone_ID.y" ,
-#     "Strip_Type.y"  ,
-#     "higher_than_GSP_label",
-#     "the_GSP_label" ,
-#     "lower_than_GSP_label",
-#     "paddock_ID_Type",
-#     "input_file",
-#     "paddock_code"
-#   )
 
-# df <- df %>% 
-#   mutate(paddock_ID_Type.x = paste0(paddock_code, "_", Strip_Type.x)) 
-# check01 <- df %>%  count(rate_name) #number of zone with analysis done that have GR
-# 
-# check01
-# check02 <- df %>%
-#   filter(rate_name == "Grower_rate") %>%
-#   select(Zone_ID.x, input_file, paddock_code, Strip_Type.x, paddock_ID_Type.x)
-# 
-# check03 <- check02 %>%  distinct(paddock_ID_Type.x, .keep_all = TRUE)
-# check03 %>%  count(Strip_Type.x)
-# count(check03)
 #######################################################################
 ## now turn these extra clms into one clm high_lower_GSP
 names(df)
@@ -545,32 +695,32 @@ df$rate_name_order <- as.character(df$rate_name_order)
 ##############################################################################
 # Check this via summary stats grain_income
 
-summaries_grain_income <- 
-  df %>% group_by(Strip_Type, rate_name_order) %>% 
-  summarise(
-  count = n(),
-  mean_grain_income = mean(grain_income, na.rm = TRUE),
-  min_grain_income = min(grain_income, na.rm = TRUE),
-  max_grain_income = max(grain_income, na.rm = TRUE)
-)
+# summaries_grain_income <- 
+#   df %>% group_by(Strip_Type, rate_name_order) %>% 
+#   summarise(
+#   count = n(),
+#   mean_grain_income = mean(grain_income, na.rm = TRUE),
+#   min_grain_income = min(grain_income, na.rm = TRUE),
+#   max_grain_income = max(grain_income, na.rm = TRUE)
+# )
 
-summaries_grain_income$rate_name_order <- as.factor(summaries_grain_income$rate_name_order)
-summaries_grain_income$rate_name_order <- factor(summaries_grain_income$rate_name_order, 
-                                        levels = c("very_low", "low", "medium", "high", "very_high"))
+# summaries_grain_income$rate_name_order <- as.factor(summaries_grain_income$rate_name_order)
+# summaries_grain_income$rate_name_order <- factor(summaries_grain_income$rate_name_order, 
+#                                         levels = c("very_low", "low", "medium", "high", "very_high"))
 
-mean_grain_income_plot <- ggplot(summaries_grain_income, aes(rate_name_order,mean_grain_income ))+
-  geom_col() +
-  facet_wrap(.~Strip_Type)
-min_grain_income_plot <-ggplot(summaries_grain_income, aes(rate_name_order,min_grain_income ))+
-  geom_col() +
-  facet_wrap(.~Strip_Type)
-max_grain_income_plot <-ggplot(summaries_grain_income, aes(rate_name_order,max_grain_income ))+
-  geom_col() +
-  facet_wrap(.~Strip_Type)
-
-mean_grain_income_plot
-min_grain_income_plot
-max_grain_income_plot
+# mean_grain_income_plot <- ggplot(summaries_grain_income, aes(rate_name_order,mean_grain_income ))+
+#   geom_col() +
+#   facet_wrap(.~Strip_Type)
+# min_grain_income_plot <-ggplot(summaries_grain_income, aes(rate_name_order,min_grain_income ))+
+#   geom_col() +
+#   facet_wrap(.~Strip_Type)
+# max_grain_income_plot <-ggplot(summaries_grain_income, aes(rate_name_order,max_grain_income ))+
+#   geom_col() +
+#   facet_wrap(.~Strip_Type)
+# 
+# mean_grain_income_plot
+# min_grain_income_plot
+# max_grain_income_plot
 ##############################################################################
 ## cost for test $3 per ha for rates that are not the GSP
 
@@ -590,6 +740,8 @@ df <- df %>%
     )
   )
 names(df)
+df <- df %>% 
+  rename(Strip_Type = Strip_Type.x)
 df <- df %>% 
   dplyr::mutate(
     variable_costs = case_when(
@@ -626,7 +778,7 @@ df <- df %>%
 names(df)
 
 temp_df <- df %>% 
-  dplyr::select(Zone_ID,
+  dplyr::select(Zone_ID = Zone_ID.x,
                 Rate,
                 Strip_Type,
                 Fld_Join_Approx1,
@@ -766,7 +918,7 @@ df <- df %>%
  ##5. join and save
  
  #1. 
- rm(list=ls()[!ls() %in% 'df'])
+ #rm(list=ls()[!ls() %in% 'df'])
  #2. 
  names(df)
  df_temp <- df %>% 
@@ -781,7 +933,12 @@ df <- df %>%
  df_temp <- df_temp %>% 
    distinct(Fld_Join_Approx1, .keep_all = TRUE)
 #3. bring in 
+ names(GS_high_low_3d)
+ 
  GS_high_low_3d <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/GSP_low_high_comparision_t_test_merged_3d.csv")
+ GS_high_low_3d <- GS_high_low_3d %>% 
+   filter(Zone_ID %in% list_of_zone_include)
+ 
  GS_high_low_3d <- GS_high_low_3d %>% 
    mutate(Fld_Join_Approx1 = paste0(Zone_ID, Strip_Type))
  
@@ -791,7 +948,7 @@ df <- df %>%
  
  GS_high_low_3d <- left_join(GS_high_low_3d, df_temp, by = "Fld_Join_Approx1")
 
- unique(GS_high_low_3d$yld_response)
+ 
  
  GS_high_low_3d <- GS_high_low_3d %>% 
    dplyr::mutate(
@@ -807,6 +964,9 @@ df <- df %>%
        
        ))
  
+ unique(GS_high_low_3d$Status)
+ GS_high_low_3d <- GS_high_low_3d %>% 
+   filter(Status == "5. Report Complete")
  
  ## write out to 
  write.csv(GS_high_low_3d, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_high_low_withGM.csv")
