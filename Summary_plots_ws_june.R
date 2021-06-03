@@ -1,4 +1,4 @@
-
+## June 2021 work
 #df <- read.csv( write.csv(df, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_other_withGM.csv")
 
 
