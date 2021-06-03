@@ -1,5 +1,16 @@
 ## June 2021 work
-#df <- read.csv( write.csv(df, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_other_withGM.csv")
+
+library(tidyverse)
+library(ggplot2)
+library(sf)
+library(readxl)
+library(readr)
+library(DT)
+library(dplyr)
+
+
+
+df <- read.csv("W:/value_soil_testing_prj/Economics/2020/GSP_vs_other_withGM.csv")
 
 
 ### how many zone are there when the soil test says increase P
@@ -37,12 +48,12 @@ count(plot_soil_test_info_P)
 
 #Plots for recom higher rates
 
-#high_low <- read.csv( write.csv(df, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_high_low_withGM.csv")
-high_low <- GS_high_low_3d
+high_low <- read.csv("W:/value_soil_testing_prj/Economics/2020/GSP_vs_high_low_withGM.csv")
+#high_low <- GS_high_low_3d
 names(high_low)
 unique(high_low$comparison)
 
-high <- GS_high_low_3d %>% 
+high <- high_low %>% 
   filter(comparison == "GSP_v_high")
 
 high %>% 
@@ -59,9 +70,22 @@ high %>%
 high %>% 
   group_by(Strip_Type, rainfall_class) %>% 
   summarise( 
-    mean_GSP_vs_higher = abs(round(mean(GSP_vs_higher, na.rm = TRUE),2)))
+    mean_GSP_vs_higher = abs(round(std(GSP_vs_higher, na.rm = TRUE),2)))
     
 high %>% 
   group_by(Strip_Type, rainfall_class) %>% 
-  summarise( 
-    mean_se_comp_GSP_high = abs(round(mean(se_comp_GSP_high, na.rm = TRUE),2)))
+     summarise(
+       mean_GSP_vs_higher = mean(GSP_vs_higher),
+       sd_GSP_vs_higher = sd(GSP_vs_higher),
+       n_GSP_vs_higher = n(),
+       sderror_GSP_vs_higher = sd_GSP_vs_higher/ sqrt(n_GSP_vs_higher)) %>% 
+  arrange(Strip_Type, rainfall_class)
+      
+
+## as a plot
+## change the order of the rainfall class
+
+high$rainfall_class <- factor(high$rainfall_class, levels = c("low", "medium", "high"))
+ggplot(high, aes(rainfall_class, GSP_vs_higher))+
+  geom_point()+
+  geom_boxplot(alpha=0.1)
