@@ -53,8 +53,14 @@ high_low <- read.csv("W:/value_soil_testing_prj/Economics/2020/GSP_vs_high_low_w
 names(high_low)
 unique(high_low$comparison)
 
+
+## just the higher rate comparision
 high <- high_low %>% 
   filter(comparison == "GSP_v_high")
+
+high$rainfall_class <- factor(high$rainfall_class, levels = c("low", "medium", "high"))
+
+## summary stats for the higher rate vs GSP
 
 high %>% 
   group_by(Strip_Type, rainfall_class) %>% 
@@ -67,25 +73,233 @@ high %>%
               mean_yld_GSP = round(mean(the_GSP, na.rm = TRUE),2),
               mean_yld_higher_rate = round(mean(higher_than_GSP, na.rm = TRUE),2))
 
-high %>% 
-  group_by(Strip_Type, rainfall_class) %>% 
-  summarise( 
-    mean_GSP_vs_higher = abs(round(std(GSP_vs_higher, na.rm = TRUE),2)))
+high <- high %>% 
+  mutate(higher_vs_GSP = GSP_vs_higher * -1)
+
+
     
 high %>% 
   group_by(Strip_Type, rainfall_class) %>% 
      summarise(
-       mean_GSP_vs_higher = mean(GSP_vs_higher),
-       sd_GSP_vs_higher = sd(GSP_vs_higher),
+       mean_GSP_vs_higher = mean(higher_vs_GSP),
+       sd_GSP_vs_higher = sd(higher_vs_GSP),
        n_GSP_vs_higher = n(),
        sderror_GSP_vs_higher = sd_GSP_vs_higher/ sqrt(n_GSP_vs_higher)) %>% 
   arrange(Strip_Type, rainfall_class)
       
+## end of summary stats
+
 
 ## as a plot
-## change the order of the rainfall class
 
-high$rainfall_class <- factor(high$rainfall_class, levels = c("low", "medium", "high"))
-ggplot(high, aes(rainfall_class, GSP_vs_higher))+
+names(high)
+#my cal in GSP_vs_higher clm is yld for GSP rate  - yield for higher rate
+#so I need to flip my sign
+high_plot <- high %>% 
+  mutate(higher_vs_GSP = GSP_vs_higher * -1)
+  
+#1. boxplot of yield differences
+ggplot(high_plot, aes(rainfall_class, higher_vs_GSP))+
   geom_point()+
-  geom_boxplot(alpha=0.1)
+  geom_boxplot(alpha=0.1)+
+  facet_wrap(.~ Strip_Type)+
+  theme_bw()+
+  labs(x = "rainfall class", y = "yield difference GSP rate - higher fert rate")
+
+names(high_plot)
+
+#2. boxplot of GM differences
+ggplot(high_plot, aes(rainfall_class, GM_diff_higher_rate))+
+  geom_point()+
+  geom_boxplot(alpha=0.1)+
+  facet_wrap(.~ Strip_Type)+
+  theme_bw()+
+  labs(x = "rainfall class", y = "GM difference GSP rate vs higher fert rate")
+
+#3. histogram plot of GM differences
+ggplot(high_plot, aes( GM_diff_higher_rate))+
+  geom_histogram(aes(y = stat(count) / sum(count))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #geom_histogram()+
+  facet_wrap(.~ Strip_Type)+
+  theme_bw()+
+  labs(x = "GM difference GSP rate vs higher fert rate", y = "zones")+
+  geom_vline(
+    xintercept = 0,
+    linetype = "dotted",
+    color = "red",
+    size = 1.0
+  ) +
+  
+
+str(high_plot)
+high_yld <- high_plot %>% 
+  select(rainfall_class,the_GSP, higher_than_GSP, Strip_Type )
+str(high_yld)
+## put the Yld into one clm to plot
+high_yld <- high_yld %>% 
+  pivot_longer(cols = c(the_GSP, higher_than_GSP),
+               names_to =  "fert_rate", 
+               values_to = "yield")
+
+## change the order of fert rate
+str(high_yld)
+unique(high_yld$fert_rate)
+high_yld$fert_rate <- factor(high_yld$fert_rate, levels = c("the_GSP", "higher_than_GSP"))
+
+#4. boxplot of actual yield
+
+high_yld %>%   
+  ggplot(aes(x = rainfall_class, y = yield, color =fert_rate)) +
+  geom_point(position = position_dodge(width=0.75)) +
+  geom_boxplot(alpha = 0.1, width=0.75,aes(fill = fert_rate)) +
+  theme_bw()+
+  facet_wrap(.~Strip_Type)+
+  labs(x = "rainfall class", y = "yield t/ha")
+  
+  
+#4. boxplot of actual GM umm I cant do this beacuse i only have the differnece add - not actual
+names(high_plot)
+
+high_GM <- high_plot %>% 
+  select(rainfall_class, 
+         #add the extra clms that have GM for higher rate
+         #add the extra clms that have GM for GSP rate
+          Strip_Type )
+
+str(high_GM)
+## put the Yld into one clm to plot
+# high_GM <- high_GM %>% 
+#   pivot_longer(cols = c(#newclm, #newclm),
+#                names_to =  "fert_rate", 
+#                values_to = "GM")
+
+
+
+ #########################################################################################
+## summary stats on what is classified as having a positive yield resposne 
+# a positive yield resposne is one that is:
+#- yield increases by applying more fert and is significant
+#- if yield increases by applying more fert but is not significant then no_response_sig etc..
+str(high)
+unique(high$yld_response_sig)
+
+high %>% 
+  group_by(Strip_Type ) %>% 
+  summarise(
+    count = n())
+high %>% 
+  group_by(Strip_Type , yld_response_sig) %>% 
+  summarise(
+    n_yld_response_sig = n())
+## average yield gains recode the negative values to zero 
+high <- high %>%
+  mutate(
+    yld_gains_higher_rate = case_when(
+    higher_vs_GSP > 0 ~ higher_vs_GSP,
+    TRUE ~ 0))
+
+str(high)
+high$GM_diff_higher_rate <- as.double(high$GM_diff_higher_rate)
+high <- high %>%
+  mutate(
+    GM_gains_higher_rate = case_when(
+      GM_diff_higher_rate > 0 ~ GM_diff_higher_rate,
+      TRUE ~ 0))
+
+high %>% 
+  group_by(Strip_Type , yld_response_sig) %>% 
+  summarise(mean_yld_gains = mean(yld_gains_higher_rate, na.rm = TRUE))
+
+high %>% 
+  group_by(Strip_Type , yld_response_sig) %>% 
+  summarise(mean_GM_gains_higher_rate = mean(GM_gains_higher_rate, na.rm = TRUE))
+
+high %>% 
+  group_by(Strip_Type , yld_response_sig) %>% 
+  summarise(mean_GM_diff_higher_rate = mean(GM_diff_higher_rate, na.rm = TRUE))
+
+
+###################################################################################
+## boxplots for GM or Yld for 2 groups a)the GSP b) the rec rate
+
+## need to do some work to get this.
+names(df)
+df_subset <- df %>% 
+  dplyr::select(Zone_ID = Zone_ID.x,
+                Strip_Type,
+                join_zone_ID_Strip_Type,
+                P_content,
+                N_content,
+                N_P_content,
+                p_rec,
+                n_rec,
+                rec_rate_label,
+                GSP,
+                #high_lower_GSP,
+                rainfall_class,
+                yield,
+                GM)
+                
+## keep only GPS rows and rec_rate_label                
+# test <- df_subset %>% 
+#   filter(!is.na(GSP) &
+#            !is.na(rec_rate_label))
+#                 
+df_subset %>% replace(is.na(GSP), "no_value")                
+str(df_subset)
+
+df_subset$GSP <- as.character(df_subset$GSP)
+df_subset$rec_rate_label <- as.character(df_subset$rec_rate_label)
+unique(df_subset$GSP)
+
+
+
+df_subset <- df_subset %>% 
+  mutate(GSP_Rec_both = case_when(
+    GSP == "GSP" & rec_rate_label == "closest_match" ~ "both",
+    is.na(GSP)  & rec_rate_label == "closest_match" ~ "rec_rate",
+    GSP == "GSP"  & is.na(rec_rate_label) ~ "GSP",
+    TRUE ~ "other"
+    
+  ))
+
+#quick chcek on zones - yip this looks good 173
+df_subset %>%  
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>% 
+  count()
+# remove row that arent the GSP or the rec rate               
+unique(df_subset$GSP_Rec_both)
+
+df_subset <- df_subset %>%
+  filter( GSP_Rec_both !=  "other" )
+                
+#check
+df_subset %>%  
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>% 
+  group_by(GSP_Rec_both) %>% 
+  summarise(count = n())
+names(df_subset)  
+
+### need to check this is correct
+df_subset %>%  
+  filter( GSP_Rec_both !=  "both" ) %>% 
+  count()
+
+df_subset %>%  
+  filter( GSP_Rec_both !=  "both" ) %>% 
+  ggplot(aes(x = rainfall_class, y = yield, color =GSP_Rec_both)) +
+  geom_point(position = position_dodge(width=0.75)) +
+  geom_boxplot(alpha = 0.1, width=0.75,aes(fill = GSP_Rec_both)) +
+  theme_bw()+
+  facet_wrap(.~Strip_Type)+
+  labs(x = "rainfall class", y = "yield t/ha")
+
+df_subset %>%  
+  filter( GSP_Rec_both !=  "both" ) %>% 
+  ggplot(aes(x = rainfall_class, y = GM, color =GSP_Rec_both)) +
+  geom_point(position = position_dodge(width=0.75)) +
+  geom_boxplot(alpha = 0.1, width=0.75,aes(fill = GSP_Rec_both)) +
+  theme_bw()+
+  facet_wrap(.~Strip_Type)+
+  labs(x = "rainfall class", y = "GM $/ha")
