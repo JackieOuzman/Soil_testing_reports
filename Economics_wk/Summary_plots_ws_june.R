@@ -129,8 +129,9 @@ ggplot(high_plot, aes( GM_diff_higher_rate))+
     linetype = "dotted",
     color = "red",
     size = 1.0
-  ) +
-  
+  ) 
+
+#### Yld ####
 
 str(high_plot)
 high_yld <- high_plot %>% 
@@ -157,23 +158,28 @@ high_yld %>%
   facet_wrap(.~Strip_Type)+
   labs(x = "rainfall class", y = "yield t/ha")
   
-  
-#4. boxplot of actual GM umm I cant do this beacuse i only have the differnece add - not actual
-names(high_plot)
-
+### GM ##### 
+str(high_plot)
 high_GM <- high_plot %>% 
-  select(rainfall_class, 
-         #add the extra clms that have GM for higher rate
-         #add the extra clms that have GM for GSP rate
-          Strip_Type )
-
+  select(rainfall_class,GM_GSP_rate, GM_higher_than_GSP_rate, Strip_Type )
 str(high_GM)
 ## put the Yld into one clm to plot
-# high_GM <- high_GM %>% 
-#   pivot_longer(cols = c(#newclm, #newclm),
-#                names_to =  "fert_rate", 
-#                values_to = "GM")
+high_GM <- high_GM %>% 
+  pivot_longer(cols = c(GM_GSP_rate, GM_higher_than_GSP_rate),
+               names_to =  "fert_rate", 
+               values_to = "GM")
 
+ 
+#5. boxplot of actual GM 
+names(high_GM)
+
+high_GM %>%   
+  ggplot(aes(x = rainfall_class, y = GM, color =fert_rate)) +
+  geom_point(position = position_dodge(width=0.75)) +
+  geom_boxplot(alpha = 0.1, width=0.75,aes(fill = fert_rate)) +
+  theme_bw()+
+  facet_wrap(.~Strip_Type)+
+  labs(x = "rainfall class", y = "GM $/ha")
 
 
  #########################################################################################
@@ -285,6 +291,10 @@ names(df_subset)
 df_subset %>%  
   filter( GSP_Rec_both !=  "both" ) %>% 
   count()
+check <- df_subset %>%  
+  filter( GSP_Rec_both !=  "both" )
+
+df_subset$rainfall_class <- factor(df_subset$rainfall_class, levels = c("low", "medium", "high"))
 
 df_subset %>%  
   filter( GSP_Rec_both !=  "both" ) %>% 
@@ -303,3 +313,152 @@ df_subset %>%
   theme_bw()+
   facet_wrap(.~Strip_Type)+
   labs(x = "rainfall class", y = "GM $/ha")
+
+### what is the What is the N/P content of GSP 
+
+n_p_contnet_GPS <- df_subset %>% 
+  filter(GSP == "GSP")
+
+#check
+n_p_contnet_GPS %>%  
+    count()
+names(n_p_contnet_GPS)
+
+n_p_contnet_GPS %>% 
+  filter(Strip_Type == "N Strip") %>% 
+ggplot( aes( N_P_content))+
+  geom_histogram(aes(y = stat(count) / sum(count))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #geom_histogram()+
+    theme_bw()+
+  labs(x = "N content of GSP", y = "zones")
+  
+n_p_contnet_GPS %>% 
+  filter(Strip_Type == "P Strip") %>% 
+  ggplot( aes( N_P_content))+
+  geom_histogram(aes(y = stat(count) / sum(count))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #geom_histogram()+
+  theme_bw()+
+  labs(x = "P content of GSP", y = "zones")
+
+
+### what is the What is the N/P content of approx rec rate?
+
+names(df_subset)
+n_p_contnet_approx_rec <- df_subset %>% 
+  filter(rec_rate_label == "closest_match")
+#check
+n_p_contnet_approx_rec %>%  
+  count()
+
+
+n_p_contnet_approx_rec %>% 
+  filter(Strip_Type == "N Strip") %>% 
+  ggplot( aes( N_P_content))+
+  geom_histogram(aes(y = stat(count) / sum(count))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #geom_histogram()+
+  theme_bw()+
+  labs(x = "N content of Approx. rec", y = "zones")
+
+n_p_contnet_approx_rec %>% 
+  filter(Strip_Type == "P Strip") %>% 
+  ggplot( aes( N_P_content))+
+  geom_histogram(aes(y = stat(count) / sum(count))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  #geom_histogram()+
+  theme_bw()+
+  labs(x = "P content of Approx. rec", y = "zones")
+
+
+### what is the difference in P / N contnet between the GSP and the approx rec rate?
+n_p_content_GSP_vs_approx <- 
+  df_subset%>%  
+  filter( GSP_Rec_both !=  "both" ) 
+names(n_p_content_GSP_vs_approx)
+str(n_p_content_GSP_vs_approx)
+#two new clms
+n_p_content_GSP_vs_approx <- n_p_content_GSP_vs_approx %>% 
+  mutate(
+    GSP_n_p = case_when(
+    GSP_Rec_both == "GSP" ~ N_P_content
+  ))
+n_p_content_GSP_vs_approx <- n_p_content_GSP_vs_approx %>% 
+  mutate(
+    Approx_n_p = case_when(
+      GSP_Rec_both == "rec_rate" ~ N_P_content
+    ))
+str(n_p_content_GSP_vs_approx_1)
+
+n_p_content_GSP_vs_approx_1 <- n_p_content_GSP_vs_approx %>% 
+  filter( GSP_Rec_both ==  "GSP" )
+n_p_content_GSP_vs_approx_1 <- n_p_content_GSP_vs_approx_1 %>% 
+  distinct(join_zone_ID_Strip_Type, .keep_all= TRUE) %>% 
+  select(join_zone_ID_Strip_Type, GSP_n_p)
+
+n_p_content_GSP_vs_approx_2 <- n_p_content_GSP_vs_approx %>% 
+  filter( GSP_Rec_both ==  "rec_rate" )
+n_p_content_GSP_vs_approx_2 <- n_p_content_GSP_vs_approx_2 %>% 
+  distinct(join_zone_ID_Strip_Type, .keep_all= TRUE) %>% 
+  select(join_zone_ID_Strip_Type,   rainfall_class, p_rec, n_rec, Zone_ID,Strip_Type,Approx_n_p )  
+
+str(n_p_content_GSP_vs_approx_1)
+str(n_p_content_GSP_vs_approx_2)
+
+
+n_p_content_GSP_vs_approx <- left_join(n_p_content_GSP_vs_approx_2, n_p_content_GSP_vs_approx_1)
+str(n_p_content_GSP_vs_approx)
+n_p_content_GSP_vs_approx <- n_p_content_GSP_vs_approx %>% 
+  mutate(diff_GSP_approx_cont = GSP_n_p  - Approx_n_p)
+
+
+names(n_p_content_GSP_vs_approx)
+n_p_content_GSP_vs_approx %>%  
+  filter(Strip_Type == "N Strip") %>% 
+  ggplot(aes(x = rainfall_class, y = abs(diff_GSP_approx_cont))) +
+  geom_point(position = position_dodge(width=0.75)) +
+  geom_boxplot(alpha = 0.1, width=0.75,aes(fill = diff_GSP_approx_cont)) +
+  theme_bw()+
+  labs(x = "rainfall class", y = "ABS Difference N contnet: GPS - Approx. rec rate")
+
+n_p_content_GSP_vs_approx %>%  
+  filter(Strip_Type == "P Strip") %>% 
+  ggplot(aes(x = rainfall_class, y = abs(diff_GSP_approx_cont))) +
+  geom_point(position = position_dodge(width=0.75)) +
+  geom_boxplot(alpha = 0.1, width=0.75,aes(fill = diff_GSP_approx_cont)) +
+  theme_bw()+
+  labs(x = "rainfall class", y = "ABS Difference P contnet: GPS - Approx. rec rate")
+
+
+
+### sometime the P / N contnet for the GSP and the approx rec rate are the same?
+
+n_p_content_same <- 
+  df_subset%>%  
+  filter( GSP_Rec_both ==  "both" ) 
+#check
+n_p_content_same %>%  
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>% 
+  count()
+
+#check
+n_p_content_same %>%  
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>% 
+  group_by(Strip_Type) %>% 
+  summarise(count = n())
+
+
+n_p_content_NOTsame <- 
+  df_subset%>%  
+  filter( GSP_Rec_both !=  "both" ) 
+#check
+n_p_content_NOTsame %>%  
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>% 
+  count()
+
+#check
+n_p_content_NOTsame %>%  
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>% 
+  group_by(Strip_Type) %>% 
+  summarise(count = n())

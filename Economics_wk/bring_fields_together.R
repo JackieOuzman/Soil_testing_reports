@@ -839,6 +839,8 @@ temp_df <- temp_df %>%
     lower_than_GSP_label == Rate ~ Cost_P_N_dollar_ha
   ))
 
+
+
 ## condense this so I have one line for each zone
 names(temp_df)
 temp_df1 <- temp_df %>% 
@@ -925,6 +927,8 @@ df <- df %>%
    dplyr::select(
    Fld_Join_Approx1,
    rainfall_class,
+   GM_GSP_rate,
+   GM_higher_than_GSP_rate,
    GM_diff_higher_rate,
    GM_diff_lower_rate,
    Status)
@@ -970,7 +974,7 @@ df <- df %>%
  
  ## write out to 
  write.csv(GS_high_low_3d, "W:/value_soil_testing_prj/Economics/2020/GSP_vs_high_low_withGM.csv")
- 
+ str(GS_high_low_3d)
  
  
  ### should check GM
