@@ -350,10 +350,10 @@ theme_bw() +
   ) +
   #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
   labs(
-    title = "P recommended rates from soil testing",
+    title = "Recommendation for P",
     y = "Frequency of zones",
-    x = "result from soil test",
-    subtitle = "only including zones used in economic analysis (n =103)"
+    x = "Recommendation from the soil test"#,
+    #subtitle = "only including zones used in economic analysis (n =103)"
   )
 
 
@@ -370,11 +370,11 @@ ggplot(recom_rateDB_N, aes(x=maxN)) +
   ) +
   #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
   labs(
-    title = "N recommended  rates from soil testing",
+    title = "Recommendation for N",
     y = "Frequency of zones",
-    x = "result from soil test",
-    subtitle = "only including zones used in economic analysis (n =70)"
-  )
+    x = "Recommendation from the soil test")#,
+    #subtitle = "only including zones used in economic analysis (n =70)"
+  
 
 recom_rateDB_N <- recom_rateDB_N %>% 
   dplyr::mutate(soil_test_indicates = case_when(
@@ -409,11 +409,11 @@ ggplot( aes(x=soil_test_indicates)) +
   # ) +
   #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
   labs(
-    title = "P recommedations from soil testing - respose unlikely defined as p rec <= 5",
+    title = "Zones where P respose likely",
     y = "Frequency of zones",
-    x = "indicated from soil test",
-    subtitle = "only including zones used in economic analysis (n =103)"
-  )
+    x = "Indicated from soil test")#,
+    #subtitle = "only including zones used in economic analysis (n =103)"
+  
 
 recom_rateDB_N %>% 
   filter(soil_test_indicates!= "no_rec" ) %>% 
@@ -430,11 +430,11 @@ recom_rateDB_N %>%
   # ) +
   #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
   labs(
-    title = "N recommedations from soil testing - respose unlikely defined as N rec <= 0",
+    title = "Zones where N respose likely",
     y = "Frequency of zones",
-    x = "indicated from soil test",
-    subtitle = "only including zones used in economic analysis (n =70)"
-  )
+    x = "Indicated from soil test")#,
+    #subtitle = "only including zones used in economic analysis (n =70)"
+  
 
 recom_rateDB_N %>% 
   group_by(soil_test_indicates) %>% 

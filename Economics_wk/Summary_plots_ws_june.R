@@ -462,3 +462,4 @@ n_p_content_NOTsame %>%
   distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>% 
   group_by(Strip_Type) %>% 
   summarise(count = n())
+
