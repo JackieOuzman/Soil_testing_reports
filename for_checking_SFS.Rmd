@@ -47,8 +47,13 @@ library(readxl)
 
 
 #######################################################################################################################################################
-paddock_done2020_t<- read_excel("C:/Users/ouz001/CSIRO/Ratcliff, Christina (A&F, Waite Campus) - Soil_Testing_Project/paddock_done2020.xlsx", 
+paddock_done2020_t<- read_excel("C:/Users/ouz001/OneDrive - CSIRO/Soil_Testing_Project/paddock_done2020.xlsx",
                                 sheet = "T-test_done")
+
+
+
+# paddock_done2020_t<- read_excel("w:/value_soil_testing_prj/Yield_data/2020/processing/paddock_done2020.xlsx", 
+#                                 sheet = "T-test_done")
 
 paddock_done2020_t <- paddock_done2020_t %>% 
   dplyr::mutate(paddock5_digits = substr(`Paddock code`, start = 1, stop = 5))
@@ -59,11 +64,13 @@ selection_organisation <- "SFS"
 
 selection_Contact <- "Ashley Amourgis"
 
+selection_Farmer <- "Peel"
 
 
 paddock_done2020 <- 
   #filter(paddock_done2020_t, Organisation %in% selection_Contact) %>% 
   filter(paddock_done2020_t, Contact %in% selection_Contact) %>% 
+  #filter(paddock_done2020_t, Farmer %in% selection_Farmer) %>% 
   distinct(paddock5_digits, .keep_all= TRUE) %>% 
   dplyr::select(paddock = paddock5_digits,
                 Organisation,
@@ -72,17 +79,22 @@ paddock_done2020 <-
                 `Paddock tested`,
                 'issues/ comments',
                 'Rates excluded (recom rate analysis)' = Rates_excluded_rec_rate,
-                'Rates used (low med high analysis)' = rate_used_low_high_med)   
+                'Rates used (low med high analysis)' = rate_used_low_high_med,
+                `Dan's comments from reports` )   %>% 
+  dplyr::arrange(Farmer) 
 
 paddock_done2020_display <- 
   filter(paddock_done2020_t, Contact %in% selection_Contact) %>% 
+  #filter(paddock_done2020_t, Farmer %in% selection_Farmer) %>% 
   distinct(paddock5_digits, .keep_all= TRUE) %>% 
   dplyr::select(Paddock = paddock5_digits,
                 Organisation,
                 Contact,
                 Farmer,
-                `Paddock tested`,
-                'issues/ comments')  
+                `Paddock tested`) %>% #,
+                #'issues/ comments',
+                #`Dan's comments from reports`) %>% 
+  dplyr::arrange(Farmer) 
 
 
 paddock_details <- paddock_done2020_t %>% 
@@ -91,7 +103,7 @@ paddock_details <- paddock_done2020_t %>%
                 `Paddock tested`,
                 Zone) %>% 
   dplyr::mutate(paddock5_digits = substr(`Paddock code`, start = 1, stop = 5)) %>% 
-  dplyr::mutate(paddock5_digits = as.double(paddock5_digits))
+  dplyr::mutate(paddock5_digits = as.double(paddock5_digits)) 
 
 
 
@@ -101,22 +113,12 @@ paddock_done2020_display %>%
 
 ```
 
+
+
+
 Extra Notes:
 
 
-Waiting on yield info, Sarah will follow up.  
-- Wills	Oroukes E
-- Wills	Oroukes W
-- Vallance	Naradoon East
-- Vallance	Naradoon West
-- Dennis	Ressi W
-- Dennis	Ressi E   
-- Dennis	Ressi E
-
-Other sites (Chrsitina contacted Ash phone hook up planned)
-
-- Keating	Middle Fays
-- Keating	Far Fays
 
 
 
@@ -139,7 +141,7 @@ Growers_folder <- paste0("W:/value_soil_testing_prj/Yield_data/2020/",
 Growers_folder <- gsub(" ", "_", Growers_folder)
 Growers_folder <- gsub("-", "_", Growers_folder)
 
-
+#Growers_folder <- "W:/value_soil_testing_prj/Yield_data/2020/FSG/MSF_Frontier_Farming/"
 
 #each folder for the sites (4 listed here)
 site1 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
@@ -147,37 +149,68 @@ site1 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
                 #(unique(paddock_done2020$Farmer)[1]),
                 "/output/")
 
- site2 <- paste0((unique(paddock_done2020$Farmer)[]),"/",
+ site2 <- paste0((unique(paddock_done2020$Farmer)[1]),"/",
                  (unique(paddock_done2020$`Paddock tested`)[2]),
                  #(unique(paddock_done2020$Farmer)[2]),
                  "/output/")
  
-# site3 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
-#                 #(unique(paddock_done2020$`Paddock tested`)[3]),
-#                 (unique(paddock_done2020$Farmer)[3]),
-#                 "/output/")
+ site3 <- paste0((unique(paddock_done2020$Farmer)[2]),"/",
+                 (unique(paddock_done2020$`Paddock tested`)[3]),
+                 #(unique(paddock_done2020$Farmer)[3]),
+                 "/output/")
 
-# site4 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
-#                 (unique(paddock_done2020$`Paddock tested`)[4]),
-#                 "/output/")
-# 
-# 
-# site5 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
-#                 (unique(paddock_done2020$`Paddock tested`)[5]),
-#                 "/output/")
+ site4 <- paste0((unique(paddock_done2020$Farmer)[2]),"/",
+                 (unique(paddock_done2020$`Paddock tested`)[4]),
+                 "/output/")
 
+
+  site5 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+                   (unique(paddock_done2020$`Paddock tested`)[5]),
+                   "/output/")
+ 
+  site6 <- paste0((unique(paddock_done2020$Farmer)[3]),"/",
+                   (unique(paddock_done2020$`Paddock tested`)[6]),
+                   "/output/")
+
+ site7 <- paste0((unique(paddock_done2020$Farmer)[4]),"/",
+                  (unique(paddock_done2020$`Paddock tested`)[7]),
+                  "/output/")
+ site8 <- paste0((unique(paddock_done2020$Farmer)[4]),"/",
+                  (unique(paddock_done2020$`Paddock tested`)[8]),
+                  "/output/")
+
+site9 <- paste0((unique(paddock_done2020$Farmer)[5]),"/",
+                  (unique(paddock_done2020$`Paddock tested`)[9]),
+                  "/output/")
+
+site10 <- paste0((unique(paddock_done2020$Farmer)[5]),"/",
+                  (unique(paddock_done2020$`Paddock tested`)[10]),
+                  "/output/")
 
 site1 <- gsub(" ", "_", site1)
 site1 <- gsub("-", "_", site1)
- site2 <- gsub(" ", "_", site2)
- site2 <- gsub("-", "_", site2)
-# site3 <- gsub(" ", "_", site3)
-# site3 <- gsub("-", "_", site3)
-# site4 <- gsub(" ", "_", site4)
-# site4 <- gsub("-", "_", site4)
-# site5 <- gsub("-", "_", site5)
-# site5 <- gsub(" ", "_", site5)
-
+site1 <- gsub("&", "_", site1)
+#site1 <- gsub("/", "_", site1)
+site2 <- gsub(" ", "_", site2)
+site2 <- gsub("-", "_", site2)
+site2 <- gsub("&", "_", site2)
+site3 <- gsub(" ", "_", site3)
+site3 <- gsub("-", "_", site3)
+site3 <- gsub("&", "_", site3)
+site4 <- gsub(" ", "_", site4)
+site4 <- gsub("-", "_", site4)
+site5 <- gsub("-", "_", site5)
+site5 <- gsub(" ", "_", site5)
+site6 <- gsub("-", "_", site6)
+site6 <- gsub(" ", "_", site6)
+site7 <- gsub("-", "_", site7)
+site7 <- gsub(" ", "_", site7)
+site8 <- gsub("-", "_", site8)
+site8 <- gsub(" ", "_", site8)
+site9 <- gsub("-", "_", site9)
+site9 <- gsub(" ", "_", site9)
+site10 <- gsub("-", "_", site10)
+site10 <- gsub(" ", "_", site10)
 
 #Growers_folder 
 # site1
@@ -190,35 +223,49 @@ site1 <- gsub("-", "_", site1)
 
 #list files that conatin the word "trace" followed by anything and ending with the word ".png":
 yld_trace_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "trace(.*)$", ignore.case = TRUE)
- yld_trace_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "trace(.*)$", ignore.case = TRUE)
-# yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "trace(.*).png$", ignore.case = TRUE)
-# yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*).png$", ignore.case = TRUE)
-# yld_trace_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "trace(.*).png$", ignore.case = TRUE)
-
+yld_trace_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "trace(.*)$", ignore.case = TRUE)
+ yld_trace_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site6 <- list.files(path = paste0(Growers_folder, site6),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site7 <- list.files(path = paste0(Growers_folder, site7),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site8 <- list.files(path = paste0(Growers_folder, site8),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site9 <- list.files(path = paste0(Growers_folder, site9),pattern = "trace(.*)$", ignore.case = TRUE)
+yld_trace_site10 <- list.files(path = paste0(Growers_folder, site10),pattern = "trace(.*)$", ignore.case = TRUE)
 #list files that conatin the word "final" followed by anything and ending with the word ".png": 
 
 harvest_map_site1 <- list.files(path = paste0(Growers_folder, site1),pattern = "Final(.*)$", ignore.case = TRUE)
- harvest_map_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "Final(.*)$", ignore.case = TRUE)
-# harvest_map_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "Final(.*).png$", ignore.case = TRUE)
-# harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*).png$", ignore.case = TRUE)
-# harvest_map_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "Final(.*).png$", ignore.case = TRUE)
-
+harvest_map_site2 <- list.files(path = paste0(Growers_folder, site2),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site3 <- list.files(path = paste0(Growers_folder, site3),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site4 <- list.files(path = paste0(Growers_folder, site4),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site5 <- list.files(path = paste0(Growers_folder, site5),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site6 <- list.files(path = paste0(Growers_folder, site6),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site7 <- list.files(path = paste0(Growers_folder, site7),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site8 <- list.files(path = paste0(Growers_folder, site8),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site9 <- list.files(path = paste0(Growers_folder, site9),pattern = "Final(.*)$", ignore.case = TRUE)
+harvest_map_site10 <- list.files(path = paste0(Growers_folder, site10),pattern = "Final(.*)$", ignore.case = TRUE)
 ### paddock id details
 site_name_1 <- paste0("^",paddock_done2020$Farmer[1])
 site_name_2 <- paste0("^",paddock_done2020$Farmer[2])
-# site_name_3 <- paste0("^",paddock_done2020$Farmer[3])
-# site_name_4 <- paste0("^",paddock_done2020$paddock[4])
-# site_name_5 <- paste0("^",paddock_done2020$paddock[5])
-
-
-
+site_name_3 <- paste0("^",paddock_done2020$Farmer[3])
+site_name_4 <- paste0("^",paddock_done2020$paddock[4])
+site_name_5 <- paste0("^",paddock_done2020$paddock[5])
+site_name_6 <- paste0("^",paddock_done2020$paddock[6])
+site_name_7 <- paste0("^",paddock_done2020$paddock[7])
+site_name_8 <- paste0("^",paddock_done2020$paddock[8])
+site_name_9 <- paste0("^",paddock_done2020$paddock[9])
+site_name_10 <- paste0("^",paddock_done2020$paddock[10])
 
 Paddock_selected_site1 <- paddock_done2020$paddock[1]
 Paddock_selected_site2 <- paddock_done2020$paddock[2]
-# Paddock_selected_site3 <- paddock_done2020$paddock[3]
-# Paddock_selected_site4 <- paddock_done2020$paddock[4]
-# Paddock_selected_site5 <- paddock_done2020$paddock[5]
-
+Paddock_selected_site3 <- paddock_done2020$paddock[3]
+Paddock_selected_site4 <- paddock_done2020$paddock[4]
+Paddock_selected_site5 <- paddock_done2020$paddock[5]
+Paddock_selected_site6 <- paddock_done2020$paddock[6]
+Paddock_selected_site7 <- paddock_done2020$paddock[7]
+Paddock_selected_site8 <- paddock_done2020$paddock[8]
+Paddock_selected_site9 <- paddock_done2020$paddock[9]
+Paddock_selected_site10 <- paddock_done2020$paddock[10]
 
 ```
 
@@ -289,91 +336,305 @@ image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site2)) %>%
 
 
 
-
-```{r display site 3, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 # Site 3
 
 ### Harvest map
 
+```{r display site 3, echo=FALSE, message=FALSE, warning=FALSE}
+
+
 include_graphics(paste0(Growers_folder,site3,  harvest_map_site3))
+
 ```
 
-
-
-```{r display site 3 yld trace, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ### Yield trace
+
+
+```{r display site 3 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+
 
 include_graphics(paste0(Growers_folder,site3,  yld_trace_site3))
 ```
 
-
-
-```{r display results site 3, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ### Results
 
-image_read(dir(png_folder, full.names=T, pattern=site_name_3)) %>% 
-  image_rotate(90)
+```{r display results site 3 page1, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+ image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
+   image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg1"))) %>% 
+#   image_rotate(90)
 
 ```
 
+```{r display results site 3 page2, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site3)) %>%
+  image_rotate(90)
 
-```{r display site 4, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3, ".+Pg2"))) %>% 
+#   image_rotate(90)
+
+```
+
 # Site 4
 
 ### Harvest map
+
+```{r display site 4, echo=FALSE, message=FALSE, warning=FALSE}
+
+
 
 include_graphics(paste0(Growers_folder,site4,  harvest_map_site4))
 ```
 
 
-
-```{r display site 4 yld trace, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ### Yield trace
+
+```{r display site 4 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
 
 include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 ```
 
 
-
-```{r display results site 4, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 ### Results
 
-image_read(dir(png_folder, full.names=T, pattern=site_name_4)) %>% 
+```{r display results site 4 Page 1, echo=FALSE, message=FALSE, warning=FALSE}
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site4)) %>%
   image_rotate(90)
 
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site4, ".+Pg1"))) %>% 
+#   image_rotate(90)
+
+
 ```
-
-
-
-
-```{r display site 5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 # Site 5
 
 ### Harvest map
 
+
+```{r display site 5, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+
 include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
 ```
 
-
-
-```{r display site 5 yld trace, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-
 ### Yield trace
+
+
+```{r display site 5 yld trace, echo=FALSE, message=FALSE, warning=FALSE}
+
+
 
 include_graphics(paste0(Growers_folder,site5,  yld_trace_site5))
 ```
 
+### Results
 
 
-```{r display results site 5, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r display results site 5 page 1, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+ image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site5)) %>% 
+   image_rotate(90)
+
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site5, ".+Pg1"))) %>% 
+#   image_rotate(90)
+
+```
+
+
+# Site 6
+
+### Harvest map
+
+
+```{r "display site 6", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+include_graphics(paste0(Growers_folder,site6,  harvest_map_site6))
+```
+
+### Yield trace
+
+
+```{r "display site 6 yld trace", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+include_graphics(paste0(Growers_folder,site6,  yld_trace_site6))
+```
 
 ### Results
 
-image_read(dir(png_folder, full.names=T, pattern=site_name_5)) %>% 
+```{r display results site 6 page 1, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site6)) %>%
   image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site6, ".+Pg1"))) %>% 
+#   image_rotate(90)
+
+```
+
+
+# Site 7
+
+### Harvest map
+
+
+```{r display site 7, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site7,  harvest_map_site7))
+```
+
+
+### Yield trace
+
+
+```{r "display site 7 yld trace", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site7,  yld_trace_site7))
+```
+
+### Results
+
+```{r "display results site 7 page 1", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site7)) %>%
+  image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site7, ".+Pg1"))) %>% 
+#   image_rotate(90)
+
+
+```
+
+
+# Site 8
+
+### Harvest map
+
+
+```{r display site 8, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site8,  harvest_map_site8))
+```
+
+
+### Yield trace
+
+
+```{r "display site 8 yld trace", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site8,  yld_trace_site8))
+```
+
+### Results
+
+```{r "display results site 8 page 1", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site8)) %>%
+  image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site7, ".+Pg1"))) %>% 
+#   image_rotate(90)
+
+
+```
+
+# Site 9
+
+### Harvest map
+
+
+```{r display site 9, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site9,  harvest_map_site9))
+```
+
+
+### Yield trace
+
+
+```{r "display site 9 yld trace", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site9,  yld_trace_site9))
+```
+
+### Results
+
+```{r "display results site 9 page 1", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site9)) %>%
+  image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site7, ".+Pg1"))) %>% 
+#   image_rotate(90)
+
+
+```
+
+
+# Site 10
+
+### Harvest map
+
+
+```{r display site 10, echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site10,  harvest_map_site10))
+```
+
+
+### Yield trace
+
+
+```{r "display site 10 yld trace", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+include_graphics(paste0(Growers_folder,site10,  yld_trace_site10))
+```
+
+### Results
+
+```{r "display results site 10 page 1", echo=FALSE, message=FALSE, warning=FALSE}
+
+
+
+image_read(dir(png_folder, full.names=T, pattern=Paddock_selected_site10)) %>%
+  image_rotate(90)
+
+# image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site7, ".+Pg1"))) %>% 
+#   image_rotate(90)
+
 
 ```
 
@@ -381,18 +642,29 @@ image_read(dir(png_folder, full.names=T, pattern=site_name_5)) %>%
 
 ### check the rate provided is equivalent to the calculated N/P content.
 
+```{r how many sites, message=FALSE, warning=FALSE, include=FALSE}
+
+
+numb_sites_paddock_ID <- c(Paddock_selected_site1, Paddock_selected_site2,
+                           Paddock_selected_site3, 
+                           Paddock_selected_site4,
+                           Paddock_selected_site5, Paddock_selected_site6,
+                           Paddock_selected_site7, Paddock_selected_site8,
+                           Paddock_selected_site9,
+                           Paddock_selected_site10)
+numb_sites_paddock_ID
+
+
+```
+
+
 ```{r checks site , echo=FALSE, message=FALSE, warning=FALSE}
 
 fert_applied <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/processing_files/step2_fert_app_select_clm.csv")
 
 check_fert_applied <- fert_applied %>%
   dplyr::filter(
-    Paddock_ID == Paddock_selected_site1 |
-      Paddock_ID == Paddock_selected_site2 
-      #Paddock_ID == Paddock_selected_site3 |
-      #Paddock_ID == Paddock_selected_site4 |
-      #Paddock_ID == Paddock_selected_site5
-  ) %>%
+    Paddock_ID %in% numb_sites_paddock_ID)  %>%
   dplyr::select(Paddock_ID,
                 Rate,
                 Strip_Rate,
@@ -435,15 +707,11 @@ check_fert_applied %>%
 
 ```{r comments on spatial data 2, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="List of all unique comments in spatial dataset"}
 
-
 comments_frm_spatial_data <- spatial_data_no_yld_df %>% 
   dplyr::filter(
-    Paddock_ID == Paddock_selected_site1 |
-      Paddock_ID == Paddock_selected_site2 
-      #Paddock_ID == Paddock_selected_site3 |
-      #Paddock_ID == Paddock_selected_site4 |
-      #Paddock_ID == Paddock_selected_site5
-  ) %>%
+    Paddock_ID %in% numb_sites_paddock_ID) %>%
+
+
 distinct( paddock,Comments, .keep_all = TRUE) %>% 
   dplyr::select(Paddock_ID ,farmer, paddock, Comments )
 
@@ -469,12 +737,8 @@ GSP_AltGSP_t_test <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/process
 
 GSPvsAltGSP_plot <- GSP_AltGSP_t_test %>%
   dplyr::filter(
-    paddock_ID == Paddock_selected_site1 |
-      paddock_ID == Paddock_selected_site2 
-      #paddock_ID == Paddock_selected_site3 |
-      # paddock_ID == Paddock_selected_site4 |
-      # paddock_ID == Paddock_selected_site5
-  ) %>%
+    paddock_ID %in% numb_sites_paddock_ID) %>%
+  
   ggplot( mapping = aes(x=Significant_practical ))+
   geom_bar() +
   facet_grid(.~ Strip_Type)+
@@ -502,12 +766,7 @@ GSPvsAltGSP_plot
 
 GSP_AltGSP_t_test_display <- GSP_AltGSP_t_test %>% 
   dplyr::filter(
-    paddock_ID == Paddock_selected_site1 |
-      paddock_ID == Paddock_selected_site2 
-      #paddock_ID == Paddock_selected_site3 |
-      # paddock_ID == Paddock_selected_site4 |
-      # paddock_ID == Paddock_selected_site5
-  ) 
+    paddock_ID %in% numb_sites_paddock_ID) 
 
 
 GSP_AltGSP_t_test_display <- left_join(GSP_AltGSP_t_test_display,
@@ -567,12 +826,10 @@ high_low_comp <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/
 
 high_low_comp <- high_low_comp %>%
   dplyr::filter(
-    paddock_ID == Paddock_selected_site1 |
-      paddock_ID == Paddock_selected_site2 
-      #paddock_ID == Paddock_selected_site3 |
-      # paddock_ID == Paddock_selected_site4 |
-      # paddock_ID == Paddock_selected_site5
-  )
+    paddock_ID %in% numb_sites_paddock_ID) 
+
+
+
 high_low_comp <- left_join(high_low_comp,
                   paddock_details, by = c("Zone_ID" = "Paddock code"))
 
@@ -658,12 +915,8 @@ high_low_comp_t <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processin
 
 high_low_comp_t <- high_low_comp_t %>%
   dplyr::filter(
-    paddock_ID == Paddock_selected_site1 |
-      paddock_ID == Paddock_selected_site2 
-     # paddock_ID == Paddock_selected_site3 |
-      # paddock_ID == Paddock_selected_site4 |
-      # paddock_ID == Paddock_selected_site5
-  )
+    paddock_ID %in% numb_sites_paddock_ID)
+
 high_low_comp_t <- left_join(high_low_comp_t,
                            paddock_details, by = c("Zone_ID" = "Paddock code"))
 
@@ -764,14 +1017,10 @@ Please make a note.
                       
 
 GR_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/GSP_low_high_comparision_t_test_merged_3d.csv")
+
 GR_comparison <- GR_comparison %>%
   dplyr::filter(
-    paddock_ID == Paddock_selected_site1 |
-      paddock_ID == Paddock_selected_site2 
-     # paddock_ID == Paddock_selected_site3 
-      # paddock_ID == Paddock_selected_site4 |
-      # paddock_ID == Paddock_selected_site5
-  )
+    paddock_ID %in% numb_sites_paddock_ID) 
 
 GR_comparison_plot <-
   filter(GR_comparison, Significant_practical != "NA") %>%
@@ -965,7 +1214,6 @@ Please make a note.
 
 
 
-
 ```{r rec rate comp high low plot, echo=FALSE, message=FALSE, warning=FALSE}
 
 Rec_rate_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e.csv")
@@ -974,13 +1222,8 @@ Rec_rate_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/proc
 
 Rec_rate_comparison <- Rec_rate_comparison %>%
   dplyr::filter(
-    paddock_ID == Paddock_selected_site1 |
-      paddock_ID == Paddock_selected_site2 
-      #paddock_ID == Paddock_selected_site3 |
-      # paddock_ID == Paddock_selected_site4 |
-      # paddock_ID == Paddock_selected_site5
-  )
-
+    paddock_ID %in% numb_sites_paddock_ID) 
+    
 Rec_rate_comparison_plot <-
   filter(Rec_rate_comparison, yld_response != "NA") %>%
   ggplot( mapping = aes(x = yld_response, fill = Significant_practical)) +
@@ -998,10 +1241,9 @@ Rec_rate_comparison_plot <-
       "negative" = "negative"
     )
   ) +
-  #scale_fill_discrete(name="t.test result \npractical")+
-  scale_fill_discrete(name="t.test result")+
+  scale_fill_discrete(name="t.test result \npractical")+
   labs(
-    title = "Comparison of yield response for approx. recommended rate vs higher/lower rates",
+    title = "Comparison of yield response for approx. recommended rate vs higher/lower rates (P)",
     subtitle = "The yield response is classed as positive when higher rates of fertiliser result in higher yields",
     caption = "note: only comparison that support t.test analysis displayed",
      y = "Count of paddocks in yield response class",
@@ -1018,44 +1260,186 @@ Rec_rate_comparison_plot
 ```
 
 
+```{r rec rate comp high low plot N, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+
+Rec_rate_comparison_N <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e_N.csv")
+
+              
+
+Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
+  dplyr::filter(
+    paddock_ID %in% numb_sites_paddock_ID)
+    # paddock_ID == Paddock_selected_site1 |
+    #   paddock_ID == Paddock_selected_site2 |
+    #   paddock_ID == Paddock_selected_site3|
+    #   paddock_ID == Paddock_selected_site4 
+      # paddock_ID == Paddock_selected_site5
+      # paddock_ID == Paddock_selected_site6 |
+      # paddock_ID == Paddock_selected_site7
+ # )
+
+Rec_rate_comparison_plot_N <-
+  filter(Rec_rate_comparison_N, yld_response != "NA") %>%
+  ggplot( mapping = aes(x = yld_response, fill = Significant_practical)) +
+  geom_bar() +
+  facet_grid(Strip_Type ~ comparison)+ 
+  #labeller(Strip_Type = label_wrap_gen(width = 16 ),
+  #         comparison = label_wrap_gen(width = 16))) +
+  theme_bw() +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+  
+  scale_x_discrete(
+    labels = c(
+      "positive" = "positive",
+      "no_response" = "no response",
+      "negative" = "negative"
+    )
+  ) +
+  scale_fill_discrete(name="t.test result \npractical")+
+  labs(
+    title = "Comparison of yield response for approx. recommended rate vs higher/lower rates (N)",
+    subtitle = "The yield response is classed as positive when higher rates of fertiliser result in higher yields",
+    caption = "note: only comparison that support t.test analysis displayed",
+     y = "Count of paddocks in yield response class",
+    x = "yield response"
+  )
+
+
+Rec_rate_comparison_plot_N
+
+
+
+
+
+```
+
+
 ### Approx recommended rate vs higher fertiliser rates
 #### The rates were used for the analysis
 
 
 
-```{r rec rate comp high table rates, echo=FALSE, message=FALSE, warning=FALSE}
-
-Rec_rate_comparison <- left_join(Rec_rate_comparison, paddock_details, by= c("Zone_ID" = "Paddock code"))
 
 
+```{r rec rate comp high table rates N P, echo=FALSE, message=FALSE, warning=FALSE}
+
+#using the padock code and zone ID
+paddock_details_join <- distinct(paddock_details, `Paddock code`, .keep_all = TRUE)
+
+
+## just subset the sites we are looking at
+paddock_details_join <- paddock_details_join %>%
+  dplyr::filter(
+    paddock5_digits %in% numb_sites_paddock_ID) 
+  
+## just subset the clm we want
+paddock_details_join <- paddock_details_join %>%  
+  dplyr::select(`Zone ID`=`Paddock code`, `Paddock tested`,  `Zone name` =  Zone )
+paddock_details_join <- as.data.frame(paddock_details_join)
+ 
+
+Rec_rate_comparison_N <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e_N.csv")
+
+Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
+  dplyr::filter(
+    paddock_ID %in% numb_sites_paddock_ID) 
+ 
+
+
+Rec_rate_comparison_N <- left_join(Rec_rate_comparison_N, paddock_details_join, by= c("Zone_ID" = "Zone ID"))
+# #! we have a problem with "524102" in  check_fert_applied and  52410 in paddock_details (5 digits)
+# #So when Paddock ID 52410 I will enter the farmer and paddoock tested Farmer = Pole	, `Paddock tested` = Gums
+ # Rec_rate_comparison_N <- Rec_rate_comparison_N %>% 
+ #   mutate(`Paddock tested` = case_when(
+ #     paddock_ID == 524102 ~ "Gums",
+ #     TRUE ~ `Paddock tested`))
+
+#str(paddock_details_join)
+#str(Rec_rate_comparison_N)
+
+Rec_rate_comparison_table_higher_rates_N <- Rec_rate_comparison_N %>% 
+  filter(comparison == "rec_n_v_higher") %>% 
+  dplyr::select('Zone ID' = Zone_ID,
+                #Farmer ,
+                `Paddock tested`, 
+                `Strip Type`=`Strip_Type`,
+                #comparison,
+                `approx recommed rate` = "rec_rate_n_label",
+                `higher than recommed rate` = "higher_than_rec_rate_n_label") %>% 
+  arrange(`Zone ID`)
+
+Rec_rate_comparison_table_higher_results_N <- Rec_rate_comparison_N %>% 
+  filter(comparison == "rec_n_v_higher") %>%  
+  dplyr::select('Zone ID' = Zone_ID,
+                `Zone name` ,
+                #Farmer,
+                `Paddock tested`,
+                `Strip Type`=`Strip_Type`,
+                "yield response" = yld_response,
+                `Significant practical` = Significant_practical) 
+
+
+Rec_rate_comparison_table_higher_results_N <- Rec_rate_comparison_table_higher_results_N %>% 
+  arrange(`Zone ID`, `Strip Type`)
+
+
+
+###################################################################################################
+Rec_rate_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e.csv")
+Rec_rate_comparison <- Rec_rate_comparison %>%
+  dplyr::filter(
+    paddock_ID %in% numb_sites_paddock_ID) 
+    
+
+
+Rec_rate_comparison <- left_join(Rec_rate_comparison, paddock_details_join, by= c("Zone_ID" = "Zone ID"))
+
+#! we have a problem with "524102" in  check_fert_applied and  52410 in paddock_details (5 digits)
+#So when Paddock ID 52410 I will enter the farmer and paddoock tested Farmer = Pole	, `Paddock tested` = Gums
+
+
+#str(paddock_details_join)
+#str(Rec_rate_comparison_N)
 
 Rec_rate_comparison_table_higher_rates <- Rec_rate_comparison %>% 
   filter(comparison == "rec_p_v_higher") %>% 
   dplyr::select('Zone ID' = Zone_ID,
-                Farmer ,
+                #Farmer ,
                 `Paddock tested`, 
+                `Strip Type`=`Strip_Type`,
                 #comparison,
                 `approx recommed rate` = "rec_rate_p_label",
                 `higher than recommed rate` = "higher_than_rec_rate_p_label") %>% 
   arrange(`Zone ID`)
 
-Rec_rate_comparison_table_higher_results <- Rec_rate_comparison %>% 
+Rec_rate_comparison_table_results <- Rec_rate_comparison %>% 
   filter(comparison == "rec_p_v_higher") %>%  
   dplyr::select('Zone ID' = Zone_ID,
-                `zone name` = Zone.y,
-                Farmer,
+                `Zone name` ,
+                #Farmer,
                 `Paddock tested`,
+                `Strip Type`=`Strip_Type`,
                 "yield response" = yld_response,
-                `Significant` = Significant_practical) 
+                `Significant practical` = Significant_practical) 
+
+####################################################################################################
+# Rec_rate_comparison_table_higher_results_N
+# Rec_rate_comparison_table_higher_rates_N
+# Rec_rate_comparison_table_higher_rates
+# Rec_rate_comparison_table_results
 
 
-Rec_rate_comparison_table_higher_results <- Rec_rate_comparison_table_higher_results %>% 
-  arrange(`Zone ID`)
+Rec_rate_comparison_table_results <- rbind(Rec_rate_comparison_table_results,
+                                           Rec_rate_comparison_table_higher_results_N)
+
+
+
+Rec_rate_comparison_table_higher_rates <- rbind(Rec_rate_comparison_table_higher_rates,
+                                                Rec_rate_comparison_table_higher_rates_N)
+
 
 Rec_rate_comparison_table_higher_rates %>% 
    formattable(align = "l", - 1  )
-
-
                 
 ```
 
@@ -1066,8 +1450,10 @@ Rec_rate_comparison_table_higher_rates %>%
 
 
 
-Rec_rate_comparison_table_higher_results %>% 
+Rec_rate_comparison_table_results %>% 
    formattable(align = "l", - 1  )
+
+
 
 ```
 
@@ -1076,46 +1462,115 @@ Rec_rate_comparison_table_higher_results %>%
 
 
 
-```{r rec rate comp low table, echo=FALSE, message=FALSE, warning=FALSE}
+```{r rec rate comp low table N P , echo=FALSE, message=FALSE, warning=FALSE}
+
+Rec_rate_comparison_N <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e_N.csv")
+
+Rec_rate_comparison_N <- Rec_rate_comparison_N %>%
+  dplyr::filter(
+    paddock_ID %in% numb_sites_paddock_ID) 
+  
+
+
+Rec_rate_comparison_N <- left_join(Rec_rate_comparison_N, paddock_details_join, by= c("Zone_ID" = "Zone ID"))
+# #! we have a problem with "524102" in  check_fert_applied and  52410 in paddock_details (5 digits)
+# #So when Paddock ID 52410 I will enter the farmer and paddoock tested Farmer = Pole	, `Paddock tested` = Gums
+ Rec_rate_comparison_N <- Rec_rate_comparison_N %>% 
+   mutate(`Paddock tested` = case_when(
+     paddock_ID == 524102 ~ "Gums",
+     TRUE ~ `Paddock tested`))
+
+
+Rec_rate_comparison_table_lower_rates_N <- Rec_rate_comparison_N %>% 
+  filter(comparison == "rec_n_v_lower") %>% 
+  dplyr::select('Zone ID' = Zone_ID,
+                #Farmer ,
+                `Paddock tested`, 
+                `Strip Type`=`Strip_Type`,
+                #comparison,
+                `approx recommed rate` = "rec_rate_n_label",
+                `lower than recommed rate` = "lower_than_rec_rate_n_label") %>% 
+  arrange(`Zone ID`)
+
+Rec_rate_comparison_table_lower_results_N <- Rec_rate_comparison_N %>% 
+  filter(comparison == "rec_n_v_lower") %>%  
+  dplyr::select('Zone ID' = Zone_ID,
+                `Zone name` ,
+                #Farmer,
+                `Paddock tested`,
+                `Strip Type`=`Strip_Type`,
+                "yield response" = yld_response,
+                `Significant practical` = Significant_practical) 
+
+
+Rec_rate_comparison_table_lower_results_N <- Rec_rate_comparison_table_lower_results_N %>% 
+  arrange(`Zone ID`, `Strip Type`)
 
 
 
+###################################################################################################
+Rec_rate_comparison <-  read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/r_outputs/merged_comparision_output/rec_rate_low_high_comparision_t_test_merged_3e.csv")
+Rec_rate_comparison <- Rec_rate_comparison %>%
+  dplyr::filter(
+    paddock_ID %in% numb_sites_paddock_ID) 
+  
+
+
+Rec_rate_comparison <- left_join(Rec_rate_comparison, paddock_details_join, by= c("Zone_ID" = "Zone ID"))
+
+#str(paddock_details_join)
+#str(Rec_rate_comparison_N)
 
 Rec_rate_comparison_table_lower_rates <- Rec_rate_comparison %>% 
   filter(comparison == "rec_p_v_lower") %>% 
   dplyr::select('Zone ID' = Zone_ID,
-                #comparison,
-                Farmer ,
+                #Farmer ,
                 `Paddock tested`, 
+                `Strip Type`=`Strip_Type`,
+                #comparison,
                 `approx recommed rate` = "rec_rate_p_label",
-                `lower than recommed rate` = "lower_than_rec_rate_p_label")%>% 
+                `lower than recommed rate` = "lower_than_rec_rate_p_label") %>% 
   arrange(`Zone ID`)
-                
 
 Rec_rate_comparison_table_lower_results <- Rec_rate_comparison %>% 
   filter(comparison == "rec_p_v_lower") %>%  
   dplyr::select('Zone ID' = Zone_ID,
-                `zone name` = Zone.y,
-                Farmer,
+                `Zone name` ,
+                #Farmer,
                 `Paddock tested`,
+                `Strip Type`=`Strip_Type`,
                 "yield response" = yld_response,
-                `Significant` = Significant_practical) %>% 
-  arrange(`Zone ID`)
+                `Significant practical` = Significant_practical) 
+
+####################################################################################################
+# Rec_rate_comparison_table_higher_results_N
+# Rec_rate_comparison_table_higher_rates_N
+# Rec_rate_comparison_table_higher_rates
+# Rec_rate_comparison_table_results
+
+
+ Rec_rate_comparison_table_lower_results <- rbind(Rec_rate_comparison_table_lower_results,
+                                            Rec_rate_comparison_table_lower_results_N)
+
+
+
+ Rec_rate_comparison_table_lower_rates <- rbind(Rec_rate_comparison_table_lower_rates,
+                                                 Rec_rate_comparison_table_lower_rates_N)
 
 
 Rec_rate_comparison_table_lower_rates %>% 
    formattable(align = "l", - 1  )
 
-
                 
 ```
-
 
 #### The results for the analysis
 
 ```{r rec rate comp low table results, echo=FALSE, message=FALSE, warning=FALSE}
 Rec_rate_comparison_table_lower_results %>% 
    formattable(align = "l", - 1  )
+
+
 
 ```
 
@@ -1136,3 +1591,73 @@ Rec_rate_comparison_table_lower_results %>%
 Notes should be made in the below file:
 
 [For Notes ]("C:/Users/ouz001/CSIRO/Ratcliff, Christina (A&F, Waite Campus) - Soil_Testing_Project/paddock_done2020.xlsx")
+
+
+# Couple of checks and comments from Sean and Harms database.
+```{r Sean and Harms DB, echo=FALSE, message=FALSE, warning=FALSE}
+
+recom_rateDB <- read_excel( "W:/value_soil_testing_prj/Yield_data/2020/processing/GRDC 2020 Paddock Database_SA_VIC_May05 2021.xlsx")
+##########################################################################################################################################
+
+
+recom_rateDB <- recom_rateDB %>% 
+  dplyr::select(Zone_ID =    `Paddock code` ,
+                p_rec =           `P rec`,
+                n_rec_yld_low =   `N Rec (< 3 t/ha)` ,       
+                n_rec_yld_med =   `N Rec (3-5 t/ha)` ,             
+                n_rec_yld_high =  `N Rec (> 5 t/ha)`,
+                SM_comment_Soil_N = `SM comment Soil N`,
+                SM_comment_Soil_P = `SM comment Soil P`,
+                SM_comment_Plant_Tissue = `SM comment Plant Tissue`
+  ) 
+
+recom_rateDB <-  dplyr::mutate(recom_rateDB,  maxN = apply(recom_rateDB[3:5], 1, max, na.rm = TRUE))
+
+recom_rateDB$Zone_ID <- as.double(recom_rateDB$Zone_ID)
+
+# remove redunant clm and replace inf
+recom_rateDB <- recom_rateDB %>% 
+  mutate(
+    maxN = case_when(
+      maxN >= 0 ~ maxN,
+      TRUE ~ NA_real_
+    )
+  )
+
+
+## add 5 digit paddock code to data farme
+recom_rateDB <- recom_rateDB %>% 
+ # dplyr::mutate(paddock5_digits = substr(Zone_ID, start = 1, stop = 5))
+dplyr::mutate(paddock5_digits = substr(recom_rateDB$Zone_ID,1,nchar(recom_rateDB$Zone_ID)-1)) 
+#select only the paddocks we are working with
+recom_rateDB <- recom_rateDB %>%
+  dplyr::filter(
+    paddock5_digits %in% numb_sites_paddock_ID) 
+    
+
+
+
+recom_rateDB <- left_join(recom_rateDB,
+                                       paddock_details, by = c("Zone_ID" = "Paddock code"))
+
+recom_rateDB <- recom_rateDB %>% 
+  dplyr::select( `Zone ID` = Zone_ID,
+                 #Farmer,
+                 `Paddock tested`,
+                 Zone,
+                 `p rec` = p_rec,
+                 `Comment Soil P` = SM_comment_Soil_P,
+                 `n rec` = maxN,
+                 `Comment Soil N` = SM_comment_Soil_N,
+                 `Comment Plant Tissue` = SM_comment_Plant_Tissue,
+                 n_rec_yld_low,
+                 n_rec_yld_med,
+                 n_rec_yld_high)
+
+
+
+recom_rateDB %>% 
+  formattable(align = "l", - 1  )
+
+
+```
