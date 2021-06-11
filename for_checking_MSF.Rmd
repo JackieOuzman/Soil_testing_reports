@@ -42,6 +42,7 @@ library(readxl)
 ```
 
 ## Growers details
+
 ```{r define_sites, echo=FALSE, message=FALSE, warning=FALSE}
 
 
@@ -306,6 +307,7 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site1
 image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site1, ".+Pg2"))) %>% 
   image_rotate(90)
 ```
+
 # Site 2
 
 ### Harvest map
@@ -393,13 +395,14 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site3
   image_rotate(90)
 
 ```
+
 # Site 4  - Not done
 
 ### Harvest map
 
 
 
-```{r display site 4, message=FALSE, warning=FALSE, include=FALSE}
+```{r display site 4, echo=FALSE, message=FALSE, warning=FALSE}
 
 
 include_graphics(paste0(Growers_folder,site4,  harvest_map_site4))
@@ -413,7 +416,7 @@ include_graphics(paste0(Growers_folder,site4,  harvest_map_site4))
 include_graphics(paste0(Growers_folder,site4,  yld_trace_site4))
 ```
 
-### Results
+### Results - Not analysed
 
 
 ```{r display results site 4 Page 1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -439,6 +442,7 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site4
 
 
 ```
+
 # Site 5
 
 ### Harvest map
@@ -450,6 +454,7 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site4
 
 include_graphics(paste0(Growers_folder,site5,  harvest_map_site5))
 ```
+
 ### Yield trace
 
 
@@ -533,6 +538,7 @@ image_read(dir(png_folder, full.names=T, pattern = paste0(Paddock_selected_site6
   image_rotate(90)
 
 ```
+
 # Site 7
 
 ### Harvest map
