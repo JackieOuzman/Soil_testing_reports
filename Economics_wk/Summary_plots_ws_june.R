@@ -307,12 +307,25 @@ df_subset %>%
 
 df_subset %>%  
   filter( GSP_Rec_both !=  "both" ) %>% 
+  group_by(rainfall_class, Strip_Type, GSP_Rec_both) %>% 
+  summarise(yld_av = mean(yield),
+            yld_median = median(yield))
+
+
+df_subset %>%  
+  filter( GSP_Rec_both !=  "both" ) %>% 
   ggplot(aes(x = rainfall_class, y = GM, color =GSP_Rec_both)) +
   geom_point(position = position_dodge(width=0.75)) +
   geom_boxplot(alpha = 0.1, width=0.75,aes(fill = GSP_Rec_both)) +
   theme_bw()+
   facet_wrap(.~Strip_Type)+
   labs(x = "rainfall class", y = "GM $/ha")
+
+df_subset %>%  
+  filter( GSP_Rec_both !=  "both" ) %>% 
+  group_by(rainfall_class, Strip_Type, GSP_Rec_both) %>% 
+  summarise(GM_av = mean(GM))
+
 
 ### what is the What is the N/P content of GSP 
 
@@ -421,6 +434,14 @@ n_p_content_GSP_vs_approx %>%
   geom_boxplot(alpha = 0.1, width=0.75,aes(fill = diff_GSP_approx_cont)) +
   theme_bw()+
   labs(x = "rainfall class", y = "ABS Difference N contnet: GPS - Approx. rec rate")
+
+names(n_p_content_GSP_vs_approx)
+n_p_content_GSP_vs_approx %>%  
+  group_by(rainfall_class, Strip_Type) %>% 
+  summarise(Approx_n_p_av = mean(Approx_n_p),
+            GSP_n_p_av = mean(GSP_n_p)) %>% 
+  arrange(Strip_Type,rainfall_class)
+
 
 n_p_content_GSP_vs_approx %>%  
   filter(Strip_Type == "P Strip") %>% 
