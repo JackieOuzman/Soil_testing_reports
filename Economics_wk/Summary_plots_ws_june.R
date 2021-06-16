@@ -484,3 +484,106 @@ n_p_content_NOTsame %>%
   group_by(Strip_Type) %>% 
   summarise(count = n())
 
+
+
+###########################################################################################
+
+#### Yld ####
+
+str(df_subset)
+high_yld_1 <- df_subset %>% 
+  select(Zone_ID, rainfall_class,GSP_Rec_both, yield, Strip_Type )
+high_yld_1 <- high_yld_1 %>% 
+  filter( GSP_Rec_both !=  "both" ) 
+high_yld_1 <- as.data.frame(high_yld_1)
+str(high_yld_1)
+
+high_yld_1 %>% 
+  group_by(GSP_Rec_both) %>% 
+  summarise(count = n())
+
+# high_yld_1 <-  high_yld_1 %>% 
+#   mutate(Zone_ID_GSP_Rec_both = paste0(Zone_ID,GSP_Rec_both ))
+
+## I need to make the data wide again. I dont know why pivot wide isnt working
+high_yld_1a <- high_yld_1 %>% 
+  filter( GSP_Rec_both == "GSP")
+high_yld_1b <- high_yld_1 %>% 
+  filter( GSP_Rec_both == "rec_rate")
+
+
+high_yld_1a <- rename(high_yld_1a, yield_GSP = yield )
+high_yld_1b <- rename(high_yld_1b, yield_rec_rate = yield )
+str(high_yld_1b)
+high_yld_1b <- select(high_yld_1b,Zone_ID, yield_rec_rate )
+
+high_yld_1ab <- left_join(high_yld_1a,high_yld_1b )
+high_yld_1ab <- select(high_yld_1ab, -GSP_Rec_both )
+str(high_yld_1ab)
+## the yield difference between Rec rate and GSP 
+high_yld_1ab <- high_yld_1ab %>% 
+  mutate(Rec_rate_v_GSP = yield_rec_rate -yield_GSP) 
+
+## create a  clm for yld loss gain
+
+high_yld_1ab <- high_yld_1ab %>% 
+  mutate(Yld_loss_gain = case_when(
+    Rec_rate_v_GSP <= 0 ~ "loss",
+    Rec_rate_v_GSP > 0 ~ "gain"
+  ))
+str(high_yld_1ab)
+high_yld_1ab$Rec_rate_v_GSP <- as.double(high_yld_1ab$Rec_rate_v_GSP)
+
+high_yld_1ab %>% group_by(Yld_loss_gain, rainfall_class, Strip_Type ) %>%
+  summarise(av_yld = mean(Rec_rate_v_GSP, na.rm = FALSE)) %>% 
+  arrange(Strip_Type, Yld_loss_gain,rainfall_class )
+  
+#### GM ####
+
+str(df_subset)
+high_GM_1 <- df_subset %>% 
+  select(Zone_ID, rainfall_class,GSP_Rec_both, GM, Strip_Type )
+high_GM_1 <- high_GM_1 %>% 
+  filter( GSP_Rec_both !=  "both" ) 
+high_GM_1 <- as.data.frame(high_GM_1)
+str(high_GM_1)
+
+high_GM_1 %>% 
+  group_by(GSP_Rec_both) %>% 
+  summarise(count = n())
+
+
+
+## I need to make the data wide again. I dont know why pivot wide isnt working
+high_GM_1a <- high_GM_1 %>% 
+  filter( GSP_Rec_both == "GSP")
+high_GM_1b <- high_GM_1 %>% 
+  filter( GSP_Rec_both == "rec_rate")
+
+
+high_GM_1a <- rename(high_GM_1a, GM_GSP = GM )
+high_GM_1b <- rename(high_GM_1b, GM_rec_rate = GM )
+str(high_GM_1b)
+high_GM_1b <- select(high_GM_1b,Zone_ID, GM_rec_rate )
+
+high_GM_1ab <- left_join(high_GM_1a,high_GM_1b )
+high_GM_1ab <- select(high_GM_1ab, -GSP_Rec_both )
+str(high_GM_1ab)
+## the yield difference between Rec rate and GSP 
+high_GM_1ab <- high_GM_1ab %>% 
+  mutate(Rec_rate_v_GSP = GM_rec_rate -GM_GSP) 
+
+## create a  clm for yld loss gain
+
+high_GM_1ab <- high_GM_1ab %>% 
+  mutate(GM_loss_gain = case_when(
+    Rec_rate_v_GSP <= 0 ~ "loss",
+    Rec_rate_v_GSP > 0 ~ "gain"
+  ))
+str(high_GM_1ab)
+high_GM_1ab$Rec_rate_v_GSP <- as.double(high_GM_1ab$Rec_rate_v_GSP)
+
+high_GM_1ab %>% group_by(GM_loss_gain, rainfall_class, Strip_Type ) %>%
+  summarise(av_GM = mean(Rec_rate_v_GSP, na.rm = FALSE)) %>% 
+  arrange(Strip_Type, GM_loss_gain,rainfall_class )
+
