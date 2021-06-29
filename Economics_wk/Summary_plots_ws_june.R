@@ -277,9 +277,12 @@ df_subset %>%
 # remove row that arent the GSP or the rec rate               
 unique(df_subset$GSP_Rec_both)
 
+
 df_subset <- df_subset %>%
   filter( GSP_Rec_both !=  "other" )
-                
+    
+
+
 #check
 df_subset %>%  
   distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>% 
@@ -386,12 +389,16 @@ n_p_contnet_approx_rec %>%
 
 
 ### what is the difference in P / N contnet between the GSP and the approx rec rate?
-n_p_content_GSP_vs_approx <- 
-  df_subset%>%  
-  filter( GSP_Rec_both !=  "both" ) 
+
+## this might not work but nw I want to keep 'both' in by data
+
+  n_p_content_GSP_vs_approx <- df_subset
+  # df_subset%>%  
+  # filter( GSP_Rec_both !=  "both" ) 
 names(n_p_content_GSP_vs_approx)
 str(n_p_content_GSP_vs_approx)
-#two new clms
+#3 new clms
+#1.
 n_p_content_GSP_vs_approx <- n_p_content_GSP_vs_approx %>% 
   mutate(
     GSP_n_p = case_when(
@@ -435,7 +442,9 @@ n_p_content_GSP_vs_approx %>%
   theme_bw()+
   labs(x = "rainfall class", y = "ABS Difference N contnet: GPS - Approx. rec rate")
 
+#### the average P or N content
 names(n_p_content_GSP_vs_approx)
+View(n_p_content_GSP_vs_approx)
 n_p_content_GSP_vs_approx %>%  
   group_by(rainfall_class, Strip_Type) %>% 
   summarise(Approx_n_p_av = mean(Approx_n_p),
