@@ -390,7 +390,7 @@ n_p_contnet_approx_rec %>%
 
 ### what is the difference in P / N contnet between the GSP and the approx rec rate?
 
-## this might not work but nw I want to keep 'both' in by data
+## this might not work but now I want to keep 'both' in by data
 
   n_p_content_GSP_vs_approx <- df_subset
   # df_subset%>%  
@@ -404,12 +404,22 @@ n_p_content_GSP_vs_approx <- n_p_content_GSP_vs_approx %>%
     GSP_n_p = case_when(
     GSP_Rec_both == "GSP" ~ N_P_content
   ))
+#2. 
 n_p_content_GSP_vs_approx <- n_p_content_GSP_vs_approx %>% 
   mutate(
     Approx_n_p = case_when(
       GSP_Rec_both == "rec_rate" ~ N_P_content
     ))
-str(n_p_content_GSP_vs_approx_1)
+#3. 
+n_p_content_GSP_vs_approx <- n_p_content_GSP_vs_approx %>% 
+  mutate(
+    Approx_and_GSP = case_when(
+      GSP_Rec_both == "both" ~ N_P_content
+    ))
+
+## what is the average unit of N and P per rainfall class for the GSP (when different to the )
+
+str(n_p_content_GSP_vs_approx)
 
 n_p_content_GSP_vs_approx_1 <- n_p_content_GSP_vs_approx %>% 
   filter( GSP_Rec_both ==  "GSP" )
@@ -421,13 +431,29 @@ n_p_content_GSP_vs_approx_2 <- n_p_content_GSP_vs_approx %>%
   filter( GSP_Rec_both ==  "rec_rate" )
 n_p_content_GSP_vs_approx_2 <- n_p_content_GSP_vs_approx_2 %>% 
   distinct(join_zone_ID_Strip_Type, .keep_all= TRUE) %>% 
-  select(join_zone_ID_Strip_Type,   rainfall_class, p_rec, n_rec, Zone_ID,Strip_Type,Approx_n_p )  
+  select(join_zone_ID_Strip_Type,   Approx_n_p )  
 
-str(n_p_content_GSP_vs_approx_1)
-str(n_p_content_GSP_vs_approx_2)
+n_p_content_GSP_vs_approx_3 <- n_p_content_GSP_vs_approx %>% 
+  filter( GSP_Rec_both ==  "both" )
+n_p_content_GSP_vs_approx_3 <- n_p_content_GSP_vs_approx_3 %>% 
+  distinct(join_zone_ID_Strip_Type, .keep_all= TRUE) %>% 
+  select(join_zone_ID_Strip_Type, Approx_and_GSP )
+
+str(n_p_content_GSP_vs_approx_1) # this is the GSP
+str(n_p_content_GSP_vs_approx_2) # this is the approx
+str(n_p_content_GSP_vs_approx_3) # this is the approx == GSP
+
+# the zones dont match in the 3 files.
+names(n_p_content_GSP_vs_approx)
+test <- n_p_content_GSP_vs_approx %>% 
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE ) %>% 
+  select(join_zone_ID_Strip_Type, rainfall_class, p_rec, n_rec, Zone_ID,Strip_Type,)
+
+n_p_content_GSP_vs_approx <- left_join(test, n_p_content_GSP_vs_approx_1)
+n_p_content_GSP_vs_approx <- left_join(n_p_content_GSP_vs_approx, n_p_content_GSP_vs_approx_3)
+n_p_content_GSP_vs_approx <- left_join(n_p_content_GSP_vs_approx, n_p_content_GSP_vs_approx_2)
 
 
-n_p_content_GSP_vs_approx <- left_join(n_p_content_GSP_vs_approx_2, n_p_content_GSP_vs_approx_1)
 str(n_p_content_GSP_vs_approx)
 n_p_content_GSP_vs_approx <- n_p_content_GSP_vs_approx %>% 
   mutate(diff_GSP_approx_cont = GSP_n_p  - Approx_n_p)
@@ -596,3 +622,106 @@ high_GM_1ab %>% group_by(GM_loss_gain, rainfall_class, Strip_Type ) %>%
   summarise(av_GM = mean(Rec_rate_v_GSP, na.rm = FALSE)) %>% 
   arrange(Strip_Type, GM_loss_gain,rainfall_class )
 
+
+
+
+
+### For Rick Boardertown slide feedback.
+# Question 1) what is the recommed rate from Sean for N and P per rainfall class
+# Question 2) what is the approc rec rate for N and P per rainfall class
+# Question 3) what is the GPS N and P per rainfall class
+# calulate the difference between N/P content for the GPS and N/P content for the rec rate 
+# Question 4) In how may zones is the recom rate close to the GPS (within 5-10 units of N / P) 
+
+# slide 32 Rick
+#this data frame is all of the zone data by rate analysis, but then I have removed row that are not GPS or the recom rate - I think this is ok
+deatils_rec_rate <- df_subset
+
+
+# Question 1) what is the recommed rate from Sean for N and P per rainfall class
+names(deatils_rec_rate)
+# obtain one value per zone and strip the cal the average N and P  
+deatils_rec_rate %>%
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>%
+  group_by(Strip_Type, rainfall_class) %>%
+  summarise(
+    Av_p_rec = mean(p_rec, na.rm = TRUE),
+    Av_n_rec = mean(n_rec, na.rm = TRUE)
+  )
+
+
+# Question 2) what is the approx recommed rate  for N and P per rainfall class
+names(deatils_rec_rate)
+# filter the data on closest match
+deatils_rec_rate_closest_match<- deatils_rec_rate %>%
+filter(rec_rate_label == 	"closest_match")
+#obtain one value per zone and strip the cal the average N and P  
+deatils_rec_rate_closest_match %>%
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>%
+  group_by(Strip_Type, rainfall_class) %>%
+  summarise(
+    Av_P_content = mean(P_content, na.rm = TRUE),
+    Av_N_content = mean(N_content, na.rm = TRUE)
+  )
+
+
+
+# Question 3) what is the GPS N and P per rainfall class
+names(deatils_rec_rate)
+# filter the data on closest match
+deatils_rec_rate_GSP<- deatils_rec_rate %>%
+  filter(GSP == 	"GSP")
+
+#obtain one value per zone and strip the cal the average N and P  
+deatils_rec_rate_GSP %>%
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>%
+  group_by(Strip_Type, rainfall_class) %>%
+  summarise(
+    Av_P_content = mean(P_content, na.rm = TRUE),
+    Av_N_content = mean(N_content, na.rm = TRUE)
+  )
+
+
+# calulate the difference between N/P content for the GPS and N/P content for the rec rate 
+# Question 4) In how may zones is the recom rate close to the GPS (within 5-10 units of N / P) 
+
+#Break up my data
+
+#1. This is all the zone and strip type that has GPS 
+str(deatils_rec_rate_GSP)
+#what is the difference between P contnet and P rec
+deatils_rec_rate_GSP <- deatils_rec_rate_GSP %>% 
+  mutate(p_rec_P_content = abs( p_rec - P_content ))
+
+deatils_rec_rate_GSP <- deatils_rec_rate_GSP %>% 
+  mutate(p_rec_P_content_class = 
+           case_when(
+             p_rec_P_content <= 10 ~ "close",
+             TRUE ~ "far")
+           )
+
+#what is the difference between N contnet and N rec
+deatils_rec_rate_GSP <- deatils_rec_rate_GSP %>% 
+  mutate(n_rec_N_content = abs( n_rec - N_content ))
+
+deatils_rec_rate_GSP <- deatils_rec_rate_GSP %>% 
+  mutate(n_rec_N_content_class = 
+           case_when(
+             n_rec_N_content <= 10 ~ "close",
+             TRUE ~ "far")
+  )
+
+#obtain one value per zone and strip the cal the average N and P  
+deatils_rec_rate_GSP %>%
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>%
+  filter(Strip_Type == "P Strip") %>% 
+  group_by( rainfall_class, p_rec_P_content_class) %>%
+  summarise(
+    count = n())
+
+deatils_rec_rate_GSP %>%
+  distinct(join_zone_ID_Strip_Type, .keep_all = TRUE) %>%
+  filter(Strip_Type == "N Strip") %>% 
+  group_by( rainfall_class, n_rec_N_content_class) %>%
+  summarise(
+    count = n())
