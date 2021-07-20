@@ -313,6 +313,7 @@ GS_rates_3a_N_P_plot %>%
 #### Yld ####
 
 str(GS_rates_3a)
+
 str(GS_rates_3a_N)
 
 GS_rates_3a_yld_gain <- GS_rates_3a %>% 

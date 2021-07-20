@@ -346,15 +346,20 @@ theme_bw() +
     xintercept = 5,
     linetype = "dotted",
     color = "red",
-    size = 1.0
+    size = 2.0
   ) +
   #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
   labs(
     title = "Recommendation for P",
     y = "Frequency of zones",
-    x = "Recommendation from the soil test"#,
+    x = "Soil Test Fertiliser Recommendation (kg P/ha)"
     #subtitle = "only including zones used in economic analysis (n =103)"
-  )
+  )+
+theme(axis.title.y = element_text(size = 20),
+      axis.title.x = element_text(size = 20),
+      axis.text.x = element_text(size = 18),
+      axis.text.y = element_text(size = 18))
+      
 
 
 ggplot(recom_rateDB_N, aes(x=maxN)) +
@@ -366,14 +371,18 @@ ggplot(recom_rateDB_N, aes(x=maxN)) +
     xintercept = 0,
     linetype = "dotted",
     color = "red",
-    size = 1.0
+    size = 2.0
   ) +
   #scale_x_continuous(breaks = seq(-5.0, 5.0, by = .5))+
   labs(
     title = "Recommendation for N",
     y = "Frequency of zones",
-    x = "Recommendation from the soil test")#,
+    x = "Soil Test Fertiliser Recommendation (kg N/ha)")+
     #subtitle = "only including zones used in economic analysis (n =70)"
+  theme(axis.title.y = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        axis.text.x = element_text(size = 18),
+        axis.text.y = element_text(size = 18))
   
 
 recom_rateDB_N <- recom_rateDB_N %>% 
@@ -623,6 +632,17 @@ df <- df %>% mutate(soil_test_says_N = case_when(
   Strip_Type == "N Strip" & GSP == "GSP"& N_content == n_rec ~ "no_change",
   Strip_Type == "N Strip" & GSP == "GSP"& N_content > n_rec ~  "less_N",
 ))
+
+
+df %>% 
+  group_by(soil_test_says_P) %>% 
+  summarise(count = n())
+
+df %>% 
+  group_by(soil_test_says_N) %>% 
+  summarise(count = n())
+
+
 
 #########################################################################
 ## Add some clm about what is higher or lower than the GSP.

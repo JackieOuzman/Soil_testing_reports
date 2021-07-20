@@ -326,6 +326,26 @@ df_subset %>%
 
 df_subset %>%  
   filter( GSP_Rec_both !=  "both" ) %>% 
+  filter( Strip_Type ==  "N Strip" ) %>% 
+  ggplot(aes(x = rainfall_class, y = GM, color =GSP_Rec_both)) +
+  geom_point(position = position_dodge(width=0.75)) +
+  geom_boxplot(alpha = 0.1, width=0.75,aes(fill = GSP_Rec_both)) +
+  theme_bw()+
+  #facet_wrap(.~Strip_Type)+
+  labs(x = "rainfall class", y = "GM $/ha")
+
+df_subset %>%  
+  filter( GSP_Rec_both !=  "both" ) %>% 
+  filter( Strip_Type ==  "P Strip" ) %>% 
+  ggplot(aes(x = rainfall_class, y = GM, color =GSP_Rec_both)) +
+  geom_point(position = position_dodge(width=0.75)) +
+  geom_boxplot(alpha = 0.1, width=0.75,aes(fill = GSP_Rec_both)) +
+  theme_bw()+
+  #facet_wrap(.~Strip_Type)+
+  labs(x = "rainfall class", y = "GM $/ha")
+
+df_subset %>%  
+  filter( GSP_Rec_both !=  "both" ) %>% 
   group_by(rainfall_class, Strip_Type, GSP_Rec_both) %>% 
   summarise(GM_av = mean(GM))
 
@@ -725,3 +745,17 @@ deatils_rec_rate_GSP %>%
   group_by( rainfall_class, n_rec_N_content_class) %>%
   summarise(
     count = n())
+
+names(deatils_rec_rate_GSP)
+
+#### update the graphs so they are not grouped
+
+
+# df_subset %>%  
+#   filter( GSP_Rec_both !=  "both" ) %>% 
+#   ggplot(aes(x = rainfall_class, y = GM, color =GSP_Rec_both)) +
+#   geom_point(position = position_dodge(width=0.75)) +
+#   geom_boxplot(alpha = 0.1, width=0.75,aes(fill = GSP_Rec_both)) +
+#   theme_bw()+
+#   facet_wrap(.~Strip_Type)+
+#   labs(x = "rainfall class", y = "GM $/ha")
