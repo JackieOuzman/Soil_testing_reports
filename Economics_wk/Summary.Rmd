@@ -397,7 +397,7 @@ The rainfall is assigned to rainfall class
 ```{r plot4 rainfall, echo=FALSE, message=FALSE, warning=FALSE}
 
 
-step1 <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/processing_files/step1_spatial_data_no_yld_2021-04-30.csv")
+step1 <- read.csv("W:/value_soil_testing_prj/Yield_data/2020/processing/processing_files/step1_spatial_data_no_yld_2021-06-18.csv")
 
 
 ## some paddocks are excluded from the analysis
